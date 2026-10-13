@@ -9,6 +9,7 @@ import {colors} from '@/constants/colors';
 import {MDI} from '@/constants/iconPaths';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DriverVerificationPending'>;
@@ -21,17 +22,18 @@ async function fetchVerificationStatus(): Promise<VerificationStatus> {
   return 'rejected';
 }
 
-// TODO: load these statuses from your API
-const STATUS_ROWS = [
-  {name: "Driver's License", label: 'Approved', tone: 'pink'},
-  {name: 'Aadhar Card', label: 'Under Review', tone: 'amber'},
-  {name: 'Background Check', label: 'Cleared', tone: 'pink'},
-];
-
 const AMBER = '#F5A623';
 
 export default function DriverVerificationPendingScreen({navigation}: Props) {
   const insets = useSafeAreaInsets();
+  const strings = useStrings();
+
+  // TODO: load these statuses from your API
+  const statusRows = [
+    {name: strings.common.driversLicense, label: strings.common.approved, tone: 'pink'},
+    {name: strings.common.aadharCard, label: strings.common.underReview, tone: 'amber'},
+    {name: strings.common.backgroundCheck, label: strings.common.cleared, tone: 'pink'},
+  ];
   const [checking, setChecking] = useState(false);
 
   const onCheckStatus = async () => {
@@ -69,36 +71,38 @@ export default function DriverVerificationPendingScreen({navigation}: Props) {
           <View style={styles.heroDot} />
         </View>
 
-        <Text style={styles.title}>Verification Pending</Text>
-        <Text style={styles.subtitle}>
-          We're reviewing your documents. This usually takes 24-48 hours. We'll
-          notify you once you're ready to go online.
-        </Text>
+        <Text style={styles.title}>{strings.common.pendingTitle}</Text>
+        <Text style={styles.subtitle}>{strings.common.pendingSubtitle}</Text>
 
         <View style={styles.timeline}>
           <View style={styles.step}>
             <View style={[styles.circle, {borderColor: colors.primary}]}>
               <MdiIcon path={MDI.check} size={16} color={colors.primary} />
             </View>
-            <Text style={styles.stepLabel}>Submitted</Text>
+            <Text style={styles.stepLabel}>{strings.common.submitted}</Text>
           </View>
           <View style={styles.step}>
             <View style={[styles.circle, {borderColor: AMBER}]}>
               <View style={styles.nowDot} />
             </View>
-            <Text style={styles.stepLabel}>Reviewing</Text>
+            <Text style={styles.stepLabel}>{strings.common.reviewing}</Text>
           </View>
           <View style={styles.step}>
             <View style={[styles.circle, styles.circleNext]}>
               <View style={styles.nextRing} />
             </View>
-            <Text style={[styles.stepLabel, styles.stepLabelNext]}>Approval</Text>
+            <Text style={[styles.stepLabel, styles.stepLabelNext]}>
+              {strings.common.approval}
+            </Text>
           </View>
         </View>
 
-        <SectionLabel title="DOCUMENT STATUS" style={styles.statusLabel} />
+        <SectionLabel
+          title={strings.driverVerificationPending.documentStatus}
+          style={styles.statusLabel}
+        />
         <View style={styles.list}>
-          {STATUS_ROWS.map(row => (
+          {statusRows.map(row => (
             <View key={row.name} style={styles.row}>
               <MdiIcon path={MDI_DOCS.file} size={22} color={colors.placeholder} />
               <Text style={styles.rowName}>{row.name}</Text>
@@ -119,7 +123,7 @@ export default function DriverVerificationPendingScreen({navigation}: Props) {
 
       <View style={[styles.bottom, {paddingBottom: Math.max(insets.bottom, 16)}]}>
         <ActionButton
-          title="Check Status"
+          title={strings.common.checkStatus}
           variant="outline"
           disabled={checking}
           onPress={onCheckStatus}
@@ -127,7 +131,7 @@ export default function DriverVerificationPendingScreen({navigation}: Props) {
           style={styles.checkBtn}
         />
         <ActionButton
-          title="Contact Support"
+          title={strings.common.contactSupport}
           variant="outline"
           onPress={onSupport}
           textColor={colors.placeholder}

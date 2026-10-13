@@ -8,33 +8,35 @@ import ActionButton from '@/components/registration/ActionButton';
 import {colors} from '@/constants/colors';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PayoutIntro'>;
 
-const PERKS = [
-  {
-    path: MDI_DOCS.lock,
-    color: colors.green,
-    title: 'Bank-level Security',
-    text: 'Your data is encrypted and securely stored.',
-  },
-  {
-    path: MDI_DOCS.shieldCheck,
-    color: colors.textMuted,
-    title: 'Verified Instantly',
-    text: 'Most major banks connect in seconds.',
-  },
-  {
-    path: MDI_DOCS.pencil,
-    color: colors.textMuted,
-    title: 'Fully Editable',
-    text: 'Update your payout details at any time.',
-  },
-];
-
 export default function PayoutIntroScreen({navigation}: Props) {
   const insets = useSafeAreaInsets();
+  const strings = useStrings();
+
+  const perks = [
+    {
+      path: MDI_DOCS.lock,
+      color: colors.green,
+      title: strings.common.securityTitle,
+      text: strings.common.securityText,
+    },
+    {
+      path: MDI_DOCS.shieldCheck,
+      color: colors.textMuted,
+      title: strings.common.verifiedTitle,
+      text: strings.common.verifiedText,
+    },
+    {
+      path: MDI_DOCS.pencil,
+      color: colors.textMuted,
+      title: strings.common.editableTitle,
+      text: strings.common.editableText,
+    },
+  ];
 
   const onAddBank = () => {
     // TODO: open the bank account form (not designed yet)
@@ -60,14 +62,11 @@ export default function PayoutIntroScreen({navigation}: Props) {
             resizeMode="cover"
           />
 
-          <Text style={styles.title}>{'Get paid every\nTuesday'}</Text>
-          <Text style={styles.subtitle}>
-            Link your bank account to receive your weekly earnings directly. It's
-            fast and easy.
-          </Text>
+          <Text style={styles.title}>{strings.payoutIntro.title}</Text>
+          <Text style={styles.subtitle}>{strings.common.payoutSubtitle}</Text>
 
           <View style={styles.perks}>
-            {PERKS.map(perk => (
+            {perks.map(perk => (
               <View key={perk.title} style={styles.perkRow}>
                 <View style={styles.perkIcon}>
                   <MdiIcon path={perk.path} size={20} color={perk.color} />
@@ -81,14 +80,14 @@ export default function PayoutIntroScreen({navigation}: Props) {
           </View>
 
           <ActionButton
-            title="Add Bank Account"
+            title={strings.common.addBankAccount}
             onPress={onAddBank}
             style={styles.cta}
             icon={<ArrowRightIcon size={18} color="#FFFFFF" />}
           />
 
           <Pressable onPress={onLater} hitSlop={10} style={styles.later}>
-            <Text style={styles.laterText}>Do this later</Text>
+            <Text style={styles.laterText}>{strings.common.doThisLater}</Text>
           </Pressable>
         </View>
       </ScrollView>

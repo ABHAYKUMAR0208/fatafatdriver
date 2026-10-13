@@ -52,25 +52,26 @@ export function TextField({
   );
 }
 
-type SelectFieldProps = {
+type SelectFieldProps<T extends string> = {
   label: string;
   placeholder: string;
-  value?: string;
-  options: string[];
-  onChange: (value: string) => void;
+  value?: T;
+  options: {value: T; label: string}[];
+  onChange: (value: T) => void;
   containerStyle?: StyleProp<ViewStyle>;
 };
 
-export function SelectField({
+export function SelectField<T extends string>({
   label,
   placeholder,
   value,
   options,
   onChange,
   containerStyle,
-}: SelectFieldProps) {
+}: SelectFieldProps<T>) {
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
+  const selectedLabel = options.find(o => o.value === value)?.label;
 
   return (
     <View style={[styles.field, containerStyle]}>
@@ -81,7 +82,7 @@ export function SelectField({
         <Text
           numberOfLines={1}
           style={[styles.selectText, !value && styles.placeholderText]}>
-          {value ?? placeholder}
+          {selectedLabel ?? placeholder}
         </Text>
         <MdiIcon path={MDI.menuDown} size={24} color={colors.textSecondary} />
       </Pressable>
@@ -101,18 +102,18 @@ export function SelectField({
             <Text style={styles.sheetTitle}>{label}</Text>
             <ScrollView style={styles.sheetList}>
               {options.map(option => {
-                const selected = option === value;
+                const selected = option.value === value;
                 return (
                   <Pressable
-                    key={option}
+                    key={option.value}
                     style={styles.option}
                     onPress={() => {
-                      onChange(option);
+                      onChange(option.value);
                       setOpen(false);
                     }}>
                     <Text
                       style={[styles.optionText, selected && styles.optionTextOn]}>
-                      {option}
+                      {option.label}
                     </Text>
                     {selected ? (
                       <MdiIcon path={MDI.check} size={20} color={colors.primary} />

@@ -18,6 +18,7 @@ import {
 import PrimaryButton from '@/components/common/PrimaryButton';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BecomeRider'>;
@@ -61,6 +62,7 @@ function StatTile({value, label, color, bg}: StatProps) {
 }
 
 export default function BecomeRiderScreen({navigation}: Props) {
+  const strings = useStrings();
   const insets = useSafeAreaInsets();
 
   return (
@@ -78,55 +80,53 @@ export default function BecomeRiderScreen({navigation}: Props) {
           <View style={styles.heroShadeBottom} />
           <View style={styles.heroContent}>
             <View style={styles.badge}>
-              <Text style={styles.badgeText}>FATAFAT PARTNER PROGRAM</Text>
+              <Text style={styles.badgeText}>{strings.becomeRider.badge}</Text>
             </View>
-            <Text style={styles.heroTitle}>Become a Rider</Text>
-            <Text style={styles.heroSub}>
-              Join the fleet. Earn on your schedule.
-            </Text>
+            <Text style={styles.heroTitle}>{strings.becomeRider.title}</Text>
+            <Text style={styles.heroSub}>{strings.becomeRider.subtitle}</Text>
           </View>
         </View>
 
-        <Text style={styles.sectionLabel}>WHY RIDE WITH US</Text>
+        <Text style={styles.sectionLabel}>{strings.becomeRider.whyRide}</Text>
 
         <View style={styles.cards}>
           <FeatureCard
             icon={<DollarIcon size={20} color={colors.green} />}
             iconBg={colors.greenLight}
-            title="Top Earnings"
-            description={'Competitive rates,\nbonuses & weekly\npayouts'}
-            badge="₹1k+/day"
+            title={strings.becomeRider.earningsTitle}
+            description={strings.becomeRider.earningsText}
+            badge={strings.becomeRider.earningsBadge}
           />
           <FeatureCard
             icon={<ClockIcon size={20} color={colors.amber} />}
             iconBg={colors.amberLight}
-            title="Flexible Hours"
-            description="Drive anytime. You're always in control."
+            title={strings.becomeRider.hoursTitle}
+            description={strings.becomeRider.hoursText}
           />
           <FeatureCard
             icon={<ShieldIcon size={20} color={colors.blue} />}
             iconBg={colors.blueLight}
-            title="Safety Cover"
-            description={'24/7 support & comprehensive\ninsurance on every trip'}
+            title={strings.becomeRider.safetyTitle}
+            description={strings.becomeRider.safetyText}
           />
         </View>
 
         <View style={styles.stats}>
           <StatTile
             value="50K+"
-            label="Active Riders"
+            label={strings.becomeRider.activeRiders}
             color={colors.primary}
             bg={colors.primaryLight}
           />
           <StatTile
             value="4.8★"
-            label="Avg Rating"
+            label={strings.becomeRider.avgRating}
             color={colors.green}
             bg={colors.greenLight}
           />
           <StatTile
             value="₹200"
-            label="Signup Bonus"
+            label={strings.becomeRider.signupBonus}
             color={colors.amber}
             bg={colors.amberLight}
           />
@@ -139,7 +139,7 @@ export default function BecomeRiderScreen({navigation}: Props) {
           {paddingBottom: Math.max(insets.bottom, 12) + 4},
         ]}>
         <PrimaryButton
-          title="Start Registration"
+          title={strings.common.startRegistration}
           // TODO: go to the registration flow
           onPress={() => navigation.navigate('PersonalDetails')}
           icon={<ArrowRightIcon size={18} color="#FFFFFF" />}

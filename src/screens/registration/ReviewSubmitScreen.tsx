@@ -12,6 +12,7 @@ import {DOCUMENTS} from '@/constants/documents';
 import {MDI} from '@/constants/iconPaths';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import {useDocuments} from '@/state/documentStore';
 import {useRiderProfile} from '@/state/riderProfileStore';
 import {formatDate} from '@/utils/formatDate';
@@ -36,6 +37,8 @@ type SectionProps = {
 };
 
 function Section({icon, title, onEdit, children}: SectionProps) {
+  const strings = useStrings();
+
   return (
     <View style={styles.section}>
       <View style={styles.sectionHead}>
@@ -43,7 +46,7 @@ function Section({icon, title, onEdit, children}: SectionProps) {
         <Text style={styles.sectionTitle}>{title}</Text>
         <Pressable onPress={onEdit} hitSlop={8} style={styles.edit}>
           <MdiIcon path={MDI_DOCS.pencil} size={14} color={colors.primary} />
-          <Text style={styles.editText}>Edit</Text>
+          <Text style={styles.editText}>{strings.common.edit}</Text>
         </Pressable>
       </View>
       <View style={styles.rule} />
@@ -64,6 +67,7 @@ function Check({checked, onToggle, children}: {checked: boolean; onToggle: () =>
 }
 
 export default function ReviewSubmitScreen({navigation}: Props) {
+  const strings = useStrings();
   const p = useRiderProfile();
   const uploaded = useDocuments();
   const uploadedDocs = DOCUMENTS.filter(d => uploaded[d.id]);
@@ -90,37 +94,42 @@ export default function ReviewSubmitScreen({navigation}: Props) {
         style={styles.flex}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}>
-        <Text style={styles.step}>STEP 4 OF 4</Text>
+        <Text style={styles.step}>
+          {strings.formatString(strings.reviewSubmit.stepOf, 4, 4)}
+        </Text>
         <View style={styles.progress}>
           <SegmentedProgress step={4} />
         </View>
 
-        <Text style={styles.title}>Review & Submit</Text>
-        <Text style={styles.subtitle}>
-          Please review your information carefully before submitting your
-          application. This data will be used for your background check.
-        </Text>
+        <Text style={styles.title}>{strings.common.reviewSubmit}</Text>
+        <Text style={styles.subtitle}>{strings.reviewSubmit.subtitle}</Text>
 
         <Section
           icon={MDI_DOCS.account}
-          title="Personal Information"
+          title={strings.reviewSubmit.personalInfo}
           onEdit={() => navigation.navigate('PersonalDetails', {fromReview: true})}>
           <View style={styles.row}>
-            <Field label="Full Name" value={p.name} />
-            <Field label="Phone" value={p.phone ? `+91 ${p.phone}` : ''} />
+            <Field label={strings.common.fullName} value={p.name} />
+            <Field label={strings.common.phone} value={p.phone ? `+91 ${p.phone}` : ''} />
           </View>
           <View style={styles.row}>
-            <Field label="Email" value={p.email} />
-            <Field label="Date of Birth" value={formatDate(p.dobDigits)} />
+            <Field label={strings.common.email} value={p.email} />
+            <Field
+              label={strings.personalDetails.dateOfBirth}
+              value={formatDate(p.dobDigits)}
+            />
           </View>
           <View style={styles.row}>
-            <Field label="Gender" value={p.gender} />
+            <Field
+              label={strings.personalDetails.gender}
+              value={p.gender && strings.genders[p.gender]}
+            />
           </View>
         </Section>
 
         <Section
           icon={MDI.car}
-          title="Vehicle Details"
+          title={strings.reviewSubmit.vehicleDetails}
           onEdit={() =>
             navigation.navigate('VehicleDetails', {
               vehicle: p.vehicle,
@@ -128,30 +137,36 @@ export default function ReviewSubmitScreen({navigation}: Props) {
             })
           }>
           <View style={styles.row}>
-            <Field label="Make & Model" value={p.model} />
-            <Field label="Year" value={p.year} />
+            <Field label={strings.reviewSubmit.makeModel} value={p.model} />
+            <Field label={strings.reviewSubmit.year} value={p.year} />
           </View>
           <View style={styles.row}>
-            <Field label="License Plate" value={p.vehicleNumber} />
-            <Field label="Color" value={p.colour} />
+            <Field label={strings.reviewSubmit.licensePlate} value={p.vehicleNumber} />
+            <Field
+              label={strings.reviewSubmit.colour}
+              value={p.colour && strings.colours[p.colour]}
+            />
           </View>
           <View style={styles.row}>
-            <Field label="Vehicle Type" value={p.vehicleType} />
+            <Field
+              label={strings.vehicleDetails.vehicleType}
+              value={p.vehicleType && strings.carTypes[p.vehicleType]}
+            />
           </View>
         </Section>
 
         <Section
           icon={MDI_DOCS.fileDocument}
-          title="Documents"
+          title={strings.reviewSubmit.documents}
           onEdit={() => navigation.navigate('DocumentChecklist')}>
           {uploadedDocs.length === 0 ? (
-            <Field label="Uploaded" value="None uploaded yet" />
+            <Field label={strings.common.uploaded} value={strings.common.noneUploaded} />
           ) : (
             <View style={styles.docList}>
               {uploadedDocs.map(d => (
                 <View key={d.id} style={styles.docRow}>
                   <MdiIcon path={d.iconPath} size={18} color={colors.textSecondary} />
-                  <Text style={styles.docName}>{d.title}</Text>
+                  <Text style={styles.docName}>{strings.documents[d.id].title}</Text>
                   <MdiIcon
                     path={MDI_DOCS.checkCircleOutline}
                     size={20}
@@ -165,29 +180,30 @@ export default function ReviewSubmitScreen({navigation}: Props) {
 
         <Section
           icon={MDI_DOCS.bank}
-          title="Bank Details"
+          title={strings.reviewSubmit.bankDetails}
           onEdit={() => navigation.navigate('PayoutIntro')}>
           <View style={styles.row}>
-            <Field label="Bank Name" value={p.bank ?? 'Not added yet'} />
-            <Field label="Account Ending In" value={p.account} />
+            <Field label={strings.common.bankName} value={p.bank ?? strings.common.notAddedYet} />
+            <Field label={strings.reviewSubmit.accountEnding} value={p.account} />
           </View>
         </Section>
 
-        <Text style={styles.declTitle}>Declarations</Text>
+        <Text style={styles.declTitle}>{strings.reviewSubmit.declarations}</Text>
         <Check checked={accurate} onToggle={() => setAccurate(v => !v)}>
-          I declare that all information provided is accurate and true to the
-          best of my knowledge.
+          {strings.reviewSubmit.declareAccurate}
         </Check>
         <Check checked={terms} onToggle={() => setTerms(v => !v)}>
-          I agree to the <Text style={styles.link}>Terms of Service</Text> and{' '}
-          <Text style={styles.link}>Privacy Policy</Text>, and consent to a
-          background check.
+          {strings.formatString(
+            strings.reviewSubmit.agreeTerms,
+            <Text style={styles.link}>{strings.reviewSubmit.termsOfService}</Text>,
+            <Text style={styles.link}>{strings.reviewSubmit.privacyPolicy}</Text>,
+          )}
         </Check>
       </ScrollView>
 
       <BottomBar shadow>
         <ActionButton
-          title="Submit for Verification"
+          title={strings.reviewSubmit.submit}
           disabled={!(accurate && terms)}
           onPress={onSubmit}
           icon={<ArrowRightIcon size={18} color="#FFFFFF" />}

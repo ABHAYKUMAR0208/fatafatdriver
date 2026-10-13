@@ -13,6 +13,7 @@ import SectionLabel from '@/components/driver/SectionLabel';
 import {colors} from '@/constants/colors';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DriverAvailability'>;
@@ -22,20 +23,21 @@ type Props = NativeStackScreenProps<RootStackParamList, 'DriverAvailability'>;
 const UNSELECTED_BORDER = colors.textDark;
 
 const SERVICES = [
-  {id: 'hourly', name: 'Hourly', sub: 'Minimum 2 hrs booking', commission: 20},
-  {id: 'halfday', name: 'Half Day', sub: 'Up to 6 hrs duty slot', commission: 15},
-  {id: 'fullday', name: 'Full Day', sub: 'Up to 12 hrs duty slot', commission: 12},
-  {id: 'outstation', name: 'Outstation', sub: 'Multi-day out of city trips', commission: 10},
-];
+  {id: 'hourly', commission: 20},
+  {id: 'halfday', commission: 15},
+  {id: 'fullday', commission: 12},
+  {id: 'outstation', commission: 10},
+] as const;
 
 const TIMINGS = [
-  {id: 'morning', name: 'Morning', range: '6AM-12PM'},
-  {id: 'afternoon', name: 'Afternoon', range: '12PM-6PM'},
-  {id: 'evening', name: 'Evening', range: '6PM-12AM'},
-  {id: 'night', name: 'Night', range: '12AM-6AM'},
-];
+  {id: 'morning', range: '6AM-12PM'},
+  {id: 'afternoon', range: '12PM-6PM'},
+  {id: 'evening', range: '6PM-12AM'},
+  {id: 'night', range: '12AM-6AM'},
+] as const;
 
 export default function DriverAvailabilityScreen({navigation}: Props) {
+  const strings = useStrings();
   const [service, setService] = useState('hourly');
   const [timings, setTimings] = useState<string[]>(['morning', 'evening']);
   const [region, setRegion] = useState('South Delhi & Gurgaon Area');
@@ -54,7 +56,7 @@ export default function DriverAvailabilityScreen({navigation}: Props) {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <DriverHeader
-        title="Registration"
+        title={strings.common.registration}
         variant="plain"
         onBack={() => navigation.goBack()}
       />
@@ -67,12 +69,16 @@ export default function DriverAvailabilityScreen({navigation}: Props) {
         enableOnAndroid
         extraScrollHeight={24}
         enableResetScrollToCoords={false}>
-        <DriverStepTitle title="Availability & Preferences" step={3} />
+        <DriverStepTitle title={strings.driverAvailability.title} step={3} />
 
-        <SectionLabel title="SERVICE TYPE PREFERENCE" style={styles.sectionFirst} />
+        <SectionLabel
+          title={strings.driverAvailability.serviceType}
+          style={styles.sectionFirst}
+        />
         <View style={styles.list}>
           {SERVICES.map(s => {
             const on = s.id === service;
+            const text = strings.driverAvailability.services[s.id];
             return (
               <Pressable
                 key={s.id}
@@ -82,18 +88,20 @@ export default function DriverAvailabilityScreen({navigation}: Props) {
                   {on ? <View style={styles.radioDot} /> : null}
                 </View>
                 <View style={styles.serviceText}>
-                  <Text style={styles.serviceName}>{s.name}</Text>
-                  <Text style={styles.serviceSub}>{s.sub}</Text>
+                  <Text style={styles.serviceName}>{text.name}</Text>
+                  <Text style={styles.serviceSub}>{text.sub}</Text>
                 </View>
                 <View style={styles.pill}>
-                  <Text style={styles.pillText}>{s.commission}% Commission</Text>
+                  <Text style={styles.pillText}>
+                    {strings.formatString(strings.common.commission, s.commission)}
+                  </Text>
                 </View>
               </Pressable>
             );
           })}
         </View>
 
-        <SectionLabel title="PREFERRED TIMINGS" style={styles.section} />
+        <SectionLabel title={strings.driverAvailability.timings} style={styles.section} />
         <View style={styles.timeGrid}>
           {TIMINGS.map(t => {
             const on = timings.includes(t.id);
@@ -103,7 +111,7 @@ export default function DriverAvailabilityScreen({navigation}: Props) {
                 onPress={() => toggleTiming(t.id)}
                 style={[styles.time, on && styles.timeOn]}>
                 <Text style={[styles.timeName, on && styles.timeNameOn]}>
-                  {t.name}
+                  {strings.driverAvailability.timingNames[t.id]}
                 </Text>
                 <Text style={[styles.timeRange, on && styles.timeRangeOn]}>
                   {t.range}
@@ -113,12 +121,12 @@ export default function DriverAvailabilityScreen({navigation}: Props) {
           })}
         </View>
 
-        <SectionLabel title="PREFERRED OPERATING ZONE" style={styles.section} />
+        <SectionLabel title={strings.driverAvailability.zone} style={styles.section} />
         <DriverTextField
-          label="Operating Region"
+          label={strings.driverAvailability.region}
           labelColor={colors.placeholder}
           darkBorder
-          placeholder="Enter your operating region"
+          placeholder={strings.driverAvailability.regionPlaceholder}
           value={region}
           onChangeText={setRegion}
           containerStyle={styles.region}
@@ -130,15 +138,13 @@ export default function DriverAvailabilityScreen({navigation}: Props) {
             size={18}
             color={colors.placeholder}
           />
-          <Text style={styles.noteText}>
-            You can update your availability anytime from your profile settings.
-          </Text>
+          <Text style={styles.noteText}>{strings.driverAvailability.note}</Text>
         </View>
       </KeyboardAwareScrollView>
 
       <BottomBar>
         <ActionButton
-          title="Continue"
+          title={strings.common.continue}
           onPress={onContinue}
           icon={<ArrowRightIcon size={18} color="#FFFFFF" />}
         />

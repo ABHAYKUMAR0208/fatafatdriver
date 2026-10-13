@@ -10,41 +10,36 @@ import DriverStepTitle from '@/components/driver/DriverStepTitle';
 import SectionLabel from '@/components/driver/SectionLabel';
 import {colors} from '@/constants/colors';
 import {MDI} from '@/constants/iconPaths';
+import {
+  CarType,
+  EXPERIENCE,
+  Experience,
+  License,
+  LICENSES,
+  Transmission,
+  TRANSMISSIONS,
+} from '@/constants/options';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 import {setDriverProfile, useDriverProfile} from '@/state/driverProfileStore';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DriverExperience'>;
 
-// TODO: load these lists from your API
-const EXPERIENCE = ['Less than 1 yr', '1-3 yrs', '3-5 yrs', '5-10 yrs', '10+ yrs'];
-const LICENSES = [
-  'LMV (Light Motor Vehicle)',
-  'HMV (Heavy Motor Vehicle)',
-  'LMV + HMV',
-  'Commercial (Taxi) Badge',
-];
-const VEHICLE_TYPES = [
-  {id: 'sedan', name: 'Sedan'},
-  {id: 'suv', name: 'SUV'},
-  {id: 'hatchback', name: 'Hatchback'},
-  {id: 'luxury', name: 'Luxury'},
-];
-const TRANSMISSIONS = [
-  {id: 'manual', name: 'Manual'},
-  {id: 'automatic', name: 'Automatic'},
-];
+// TODO: load this list from your API
+const VEHICLE_TYPES: CarType[] = ['sedan', 'suv', 'hatchback', 'luxury'];
 
-function toggle(list: string[], id: string) {
+function toggle<T>(list: T[], id: T) {
   return list.includes(id) ? list.filter(x => x !== id) : [...list, id];
 }
 
 export default function DriverExperienceScreen({navigation, route}: Props) {
+  const strings = useStrings();
   const saved = useDriverProfile();
-  const [experience, setExperience] = useState<string | undefined>(saved.experience);
-  const [license, setLicense] = useState<string | undefined>(saved.license);
-  const [vehicles, setVehicles] = useState<string[]>(saved.vehicles);
-  const [transmission, setTransmission] = useState<string[]>(saved.transmission);
+  const [experience, setExperience] = useState<Experience | undefined>(saved.experience);
+  const [license, setLicense] = useState<License | undefined>(saved.license);
+  const [vehicles, setVehicles] = useState<CarType[]>(saved.vehicles);
+  const [transmission, setTransmission] = useState<Transmission[]>(saved.transmission);
 
   const onContinue = () => {
     // TODO: validate, then also save with the API
@@ -59,39 +54,45 @@ export default function DriverExperienceScreen({navigation, route}: Props) {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <DriverHeader title="Driving Experience" onBack={() => navigation.goBack()} />
+      <DriverHeader
+        title={strings.driverExperience.title}
+        onBack={() => navigation.goBack()}
+      />
 
       <ScrollView
         style={styles.flex}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}>
-        <DriverStepTitle title="Driving Experience" step={2} />
+        <DriverStepTitle title={strings.driverExperience.title} step={2} />
 
         <View style={styles.form}>
           <DriverSelectField
-            label="Total Driving Experience"
-            placeholder="Select experience"
+            label={strings.driverExperience.totalExperience}
+            placeholder={strings.driverExperience.selectExperience}
             value={experience}
-            options={EXPERIENCE}
+            options={EXPERIENCE.map(id => ({value: id, label: strings.experience[id]}))}
             onChange={setExperience}
           />
           <DriverSelectField
-            label="License Type"
-            placeholder="Select license type"
+            label={strings.driverExperience.licenseType}
+            placeholder={strings.driverExperience.selectLicense}
             value={license}
-            options={LICENSES}
+            options={LICENSES.map(id => ({value: id, label: strings.licenses[id]}))}
             onChange={setLicense}
           />
         </View>
 
-        <SectionLabel title="VEHICLE TYPES YOU CAN DRIVE" style={styles.sectionTop} />
+        <SectionLabel
+          title={strings.driverExperience.vehicleTypes}
+          style={styles.sectionTop}
+        />
         <View style={styles.grid}>
-          {VEHICLE_TYPES.map(v => {
-            const on = vehicles.includes(v.id);
+          {VEHICLE_TYPES.map(id => {
+            const on = vehicles.includes(id);
             return (
               <Pressable
-                key={v.id}
-                onPress={() => setVehicles(prev => toggle(prev, v.id))}
+                key={id}
+                onPress={() => setVehicles(prev => toggle(prev, id))}
                 style={[styles.vehicle, on && styles.vehicleOn]}>
                 {on ? (
                   <View style={styles.checkOn}>
@@ -101,25 +102,30 @@ export default function DriverExperienceScreen({navigation, route}: Props) {
                   <View style={styles.checkOff} />
                 )}
                 <View style={styles.vehicleText}>
-                  <Text style={styles.vehicleName}>{v.name}</Text>
-                  <Text style={styles.vehicleSub}>{on ? 'Selected' : 'Available'}</Text>
+                  <Text style={styles.vehicleName}>{strings.carTypes[id]}</Text>
+                  <Text style={styles.vehicleSub}>
+                    {on ? strings.driverExperience.selected : strings.driverExperience.available}
+                  </Text>
                 </View>
               </Pressable>
             );
           })}
         </View>
 
-        <SectionLabel title="TRANSMISSION PREFERENCES" style={styles.sectionTop} />
+        <SectionLabel
+          title={strings.driverExperience.transmission}
+          style={styles.sectionTop}
+        />
         <View style={styles.transRow}>
-          {TRANSMISSIONS.map(t => {
-            const on = transmission.includes(t.id);
+          {TRANSMISSIONS.map(id => {
+            const on = transmission.includes(id);
             return (
               <Pressable
-                key={t.id}
-                onPress={() => setTransmission(prev => toggle(prev, t.id))}
+                key={id}
+                onPress={() => setTransmission(prev => toggle(prev, id))}
                 style={[styles.trans, on && styles.transOn]}>
                 <Text style={[styles.transText, on && styles.transTextOn]}>
-                  {t.name}
+                  {strings.transmissions[id]}
                 </Text>
               </Pressable>
             );
@@ -128,7 +134,7 @@ export default function DriverExperienceScreen({navigation, route}: Props) {
       </ScrollView>
 
       <BottomBar>
-        <ActionButton title="Continue" onPress={onContinue} />
+        <ActionButton title={strings.common.continue} onPress={onContinue} />
       </BottomBar>
     </View>
   );

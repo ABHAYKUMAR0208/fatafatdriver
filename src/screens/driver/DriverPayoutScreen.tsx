@@ -8,6 +8,7 @@ import DriverTitleBar from '@/components/driver/DriverTitleBar';
 import {colors} from '@/constants/colors';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DriverPayout'>;
@@ -24,6 +25,7 @@ function Glow({color}: {color: string}) {
 }
 
 export default function DriverPayoutScreen({navigation}: Props) {
+  const strings = useStrings();
   const onAddBank = () => {
     // TODO: open the bank account form (not designed yet)
     navigation.navigate('DriverReview');
@@ -32,17 +34,14 @@ export default function DriverPayoutScreen({navigation}: Props) {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <DriverTitleBar title="Payout Setup" />
+      <DriverTitleBar title={strings.driverPayout.title} />
 
       <ScrollView
         style={styles.flex}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Get paid every Tuesday</Text>
-        <Text style={styles.subtitle}>
-          Link your bank account to receive your weekly earnings directly. It's
-          fast and easy.
-        </Text>
+        <Text style={styles.title}>{strings.common.payoutTitle}</Text>
+        <Text style={styles.subtitle}>{strings.common.payoutSubtitle}</Text>
 
         <View style={styles.list}>
           <View style={styles.card}>
@@ -51,10 +50,8 @@ export default function DriverPayoutScreen({navigation}: Props) {
               <MdiIcon path={MDI_DOCS.shield} size={26} color="#22C55E" />
             </View>
             <View style={styles.cardText}>
-              <Text style={styles.cardTitle}>Bank-level Security</Text>
-              <Text style={styles.cardSub}>
-                Your data is encrypted and securely stored.
-              </Text>
+              <Text style={styles.cardTitle}>{strings.common.securityTitle}</Text>
+              <Text style={styles.cardSub}>{strings.common.securityText}</Text>
             </View>
           </View>
 
@@ -64,10 +61,8 @@ export default function DriverPayoutScreen({navigation}: Props) {
               <View style={styles.dot} />
             </View>
             <View style={styles.cardText}>
-              <Text style={styles.cardTitle}>Verified Instantly</Text>
-              <Text style={styles.cardSub}>
-                Most major banks connect in seconds.
-              </Text>
+              <Text style={styles.cardTitle}>{strings.common.verifiedTitle}</Text>
+              <Text style={styles.cardSub}>{strings.common.verifiedText}</Text>
             </View>
           </View>
 
@@ -77,22 +72,20 @@ export default function DriverPayoutScreen({navigation}: Props) {
               <MdiIcon path={MDI_DOCS.squareEditOutline} size={24} color="#D1D5DB" />
             </View>
             <View style={styles.cardText}>
-              <Text style={styles.cardTitle}>Fully Editable</Text>
-              <Text style={styles.cardSub}>
-                Update your payout details at any time.
-              </Text>
+              <Text style={styles.cardTitle}>{strings.common.editableTitle}</Text>
+              <Text style={styles.cardSub}>{strings.common.editableText}</Text>
             </View>
           </View>
         </View>
       </ScrollView>
 
       <BottomBar>
-        <ActionButton title="Add Bank Account" onPress={onAddBank} />
+        <ActionButton title={strings.common.addBankAccount} onPress={onAddBank} />
         <Pressable
           onPress={() => navigation.navigate('DriverReview')}
           hitSlop={10}
           style={styles.later}>
-          <Text style={styles.laterText}>Do this later</Text>
+          <Text style={styles.laterText}>{strings.common.doThisLater}</Text>
         </Pressable>
       </BottomBar>
     </View>

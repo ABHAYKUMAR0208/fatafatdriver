@@ -8,30 +8,32 @@ import BottomBar from '@/components/registration/BottomBar';
 import {colors} from '@/constants/colors';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DriverIntro'>;
 
-const FEATURES = [
-  {
-    path: MDI_DOCS.clockOutline,
-    title: 'Flexible Hours',
-    text: 'Drive when you want. You are in complete control of your time.',
-  },
-  {
-    path: MDI_DOCS.walletOutline,
-    title: 'Good Earnings',
-    text: 'Get paid every Tuesday directly to your bank account with transparent statements.',
-  },
-  {
-    path: MDI_DOCS.shieldCheckOutline,
-    title: 'Safety Support',
-    text: '24/7 in-app emergency support and comprehensive insurance coverage on every trip.',
-  },
-];
-
 export default function DriverIntroScreen({navigation}: Props) {
   const insets = useSafeAreaInsets();
+  const strings = useStrings();
+
+  const features = [
+    {
+      path: MDI_DOCS.clockOutline,
+      title: strings.driverIntro.hoursTitle,
+      text: strings.driverIntro.hoursText,
+    },
+    {
+      path: MDI_DOCS.walletOutline,
+      title: strings.driverIntro.earningsTitle,
+      text: strings.driverIntro.earningsText,
+    },
+    {
+      path: MDI_DOCS.shieldCheckOutline,
+      title: strings.driverIntro.safetyTitle,
+      text: strings.driverIntro.safetyText,
+    },
+  ];
 
   return (
     <View style={styles.container}>
@@ -41,11 +43,8 @@ export default function DriverIntroScreen({navigation}: Props) {
         style={styles.flex}
         contentContainerStyle={[styles.content, {paddingTop: insets.top + 24}]}
         showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Become a Driver</Text>
-        <Text style={styles.subtitle}>
-          Join Fatafat as a professional driver. Get hired by vehicle owners and
-          earn on your schedule.
-        </Text>
+        <Text style={styles.title}>{strings.driverIntro.title}</Text>
+        <Text style={styles.subtitle}>{strings.driverIntro.subtitle}</Text>
 
         {/* driver_hero.png must be in android drawable (see Step 7) */}
         <Image
@@ -55,7 +54,7 @@ export default function DriverIntroScreen({navigation}: Props) {
         />
 
         <View style={styles.list}>
-          {FEATURES.map(item => (
+          {features.map(item => (
             <View key={item.title} style={styles.card}>
               <View style={styles.iconTile}>
                 <MdiIcon path={item.path} size={22} color={colors.primary} />
@@ -71,7 +70,7 @@ export default function DriverIntroScreen({navigation}: Props) {
 
       <BottomBar>
         <ActionButton
-          title="Start Registration"
+          title={strings.common.startRegistration}
           onPress={() => navigation.navigate('DriverPersonal')}
         />
       </BottomBar>

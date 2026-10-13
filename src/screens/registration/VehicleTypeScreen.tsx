@@ -18,6 +18,7 @@ import StepHeader from '@/components/registration/StepHeader';
 import {colors} from '@/constants/colors';
 import {MDI} from '@/constants/iconPaths';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import {Vehicle, VehicleId, VEHICLES} from '@/constants/vehicles';
 import type {RootStackParamList} from '@/navigation/types';
 
@@ -31,6 +32,8 @@ type CardProps = {
 };
 
 function VehicleCard({vehicle, width, selected, onPress}: CardProps) {
+  const strings = useStrings();
+
   return (
     <Pressable
       onPress={onPress}
@@ -43,15 +46,18 @@ function VehicleCard({vehicle, width, selected, onPress}: CardProps) {
       <View style={[styles.iconTile, {backgroundColor: vehicle.tint}]}>
         <MdiIcon path={vehicle.iconPath} size={30} color={vehicle.iconColor} />
       </View>
-      <Text style={styles.cardName}>{vehicle.name}</Text>
+      <Text style={styles.cardName}>{strings.vehicles[vehicle.id]}</Text>
       <View style={[styles.pill, selected && styles.pillSelected]}>
-        <Text style={styles.pillText}>{vehicle.commission}% Commission</Text>
+        <Text style={styles.pillText}>
+          {strings.formatString(strings.common.commission, vehicle.commission)}
+        </Text>
       </View>
     </Pressable>
   );
 }
 
 export default function VehicleTypeScreen({navigation}: Props) {
+  const strings = useStrings();
   const {width} = useWindowDimensions();
   const [selected, setSelected] = useState<VehicleId>('cab');
   const cardWidth = (width - 40 - 14) / 2;
@@ -78,8 +84,10 @@ export default function VehicleTypeScreen({navigation}: Props) {
           bordered={false}
         />
         <View style={styles.stepRow}>
-          <Text style={styles.stepNow}>Step 2 of 4</Text>
-          <Text style={styles.stepNext}>Vehicle Details next</Text>
+          <Text style={styles.stepNow}>
+            {strings.formatString(strings.common.stepOf, 2, 4)}
+          </Text>
+          <Text style={styles.stepNext}>{strings.vehicleType.nextStep}</Text>
         </View>
         <View style={styles.progress}>
           <SegmentedProgress step={2} />
@@ -90,10 +98,8 @@ export default function VehicleTypeScreen({navigation}: Props) {
         style={styles.flex}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Select Vehicle Type</Text>
-        <Text style={styles.subtitle}>
-          {'Choose your primary service. This determines your\ncommission rate and trip offers.'}
-        </Text>
+        <Text style={styles.title}>{strings.vehicleType.title}</Text>
+        <Text style={styles.subtitle}>{strings.vehicleType.subtitle}</Text>
 
         <View style={styles.grid}>
           {VEHICLES.map(vehicle => (
@@ -109,15 +115,13 @@ export default function VehicleTypeScreen({navigation}: Props) {
 
         <View style={styles.note}>
           <MdiIcon path={MDI.information} size={20} color={colors.green} />
-          <Text style={styles.noteText}>
-            {'Commission rates may vary with surge\nmultipliers based on zone and time. Final rates\nconfirmed in your contract.'}
-          </Text>
+          <Text style={styles.noteText}>{strings.vehicleType.note}</Text>
         </View>
       </ScrollView>
 
       <BottomBar shadow>
         <PrimaryButton
-          title="Continue"
+          title={strings.common.continue}
           onPress={onContinue}
           style={styles.cta}
           icon={<ArrowRightIcon size={18} color="#FFFFFF" />}

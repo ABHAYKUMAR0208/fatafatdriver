@@ -19,6 +19,7 @@ import {
 import PrimaryButton from '@/components/common/PrimaryButton';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RiderLogin'>;
@@ -30,6 +31,7 @@ function formatPhone(digits: string) {
 }
 
 export default function RiderLoginScreen({navigation}: Props) {
+  const strings = useStrings();
   const insets = useSafeAreaInsets();
   const [digits, setDigits] = useState('');
   const [focused, setFocused] = useState(false);
@@ -63,12 +65,10 @@ export default function RiderLoginScreen({navigation}: Props) {
           <BrandLogo width={110} />
         </View>
 
-        <Text style={styles.title}>Login as Rider</Text>
-        <Text style={styles.subtitle}>
-          {'Enter your registered mobile number to\ncontinue.'}
-        </Text>
+        <Text style={styles.title}>{strings.login.title}</Text>
+        <Text style={styles.subtitle}>{strings.login.subtitle}</Text>
 
-        <Text style={styles.label}>MOBILE NUMBER</Text>
+        <Text style={styles.label}>{strings.login.mobileNumber}</Text>
         <View
           style={[
             styles.inputRow,
@@ -93,7 +93,7 @@ export default function RiderLoginScreen({navigation}: Props) {
           />
         </View>
         {error ? (
-          <Text style={styles.error}>Enter a valid 10-digit mobile number</Text>
+          <Text style={styles.error}>{strings.login.invalidNumber}</Text>
         ) : null}
 
         <View style={styles.spacer} />
@@ -102,26 +102,26 @@ export default function RiderLoginScreen({navigation}: Props) {
           {/* TODO: open the support page */}
           <Pressable style={styles.support}>
             <HelpCircleIcon size={14} color={colors.textMuted} />
-            <Text style={styles.linkText}>Support</Text>
+            <Text style={styles.linkText}>{strings.login.support}</Text>
           </Pressable>
           {/* TODO: open terms & privacy page */}
           <Pressable>
             <Text style={[styles.linkText, styles.underline]}>
-              Terms & Privacy
+              {strings.login.terms}
             </Text>
           </Pressable>
         </View>
 
         <PrimaryButton
-          title="Continue"
+          title={strings.common.continue}
           onPress={onContinue}
           icon={<ArrowRightIcon size={18} color="#FFFFFF" />}
         />
 
         <View style={styles.registerRow}>
-          <Text style={styles.registerText}>New to Fatafat? </Text>
+          <Text style={styles.registerText}>{strings.login.newUser}</Text>
           <Pressable onPress={() => navigation.navigate('BecomeRider')}>
-            <Text style={styles.registerLink}>Register as Rider</Text>
+            <Text style={styles.registerLink}>{strings.login.register}</Text>
           </Pressable>
         </View>
       </View>

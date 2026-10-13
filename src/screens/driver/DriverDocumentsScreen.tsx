@@ -10,6 +10,7 @@ import {colors} from '@/constants/colors';
 import {DRIVER_DOCS, DriverDocId} from '@/constants/driverDocuments';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import {useDriverDocuments} from '@/state/driverDocumentStore';
 import type {RootStackParamList} from '@/navigation/types';
 
@@ -18,6 +19,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'DriverDocuments'>;
 const DOCS = DRIVER_DOCS;
 
 export default function DriverDocumentsScreen({navigation}: Props) {
+  const strings = useStrings();
   const uploaded = useDriverDocuments();
   const requiredDone = DOCS.filter(d => !d.optional).every(d => uploaded[d.id]);
 
@@ -30,7 +32,7 @@ export default function DriverDocumentsScreen({navigation}: Props) {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <DriverHeader
-        title="Registration"
+        title={strings.common.registration}
         variant="plain"
         onBack={() => navigation.goBack()}
       />
@@ -39,13 +41,10 @@ export default function DriverDocumentsScreen({navigation}: Props) {
         style={styles.flex}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}>
-        <DriverStepTitle title="Document Checklist" step={4} />
+        <DriverStepTitle title={strings.driverChecklist.title} step={4} />
 
-        <Text style={styles.heading}>Required Documents</Text>
-        <Text style={styles.subtitle}>
-          Upload the following documents to activate your profile. Verification
-          usually takes 2-4 hours.
-        </Text>
+        <Text style={styles.heading}>{strings.driverChecklist.heading}</Text>
+        <Text style={styles.subtitle}>{strings.common.documentsIntro}</Text>
 
         <View style={styles.list}>
           {DOCS.map(doc => {
@@ -64,11 +63,11 @@ export default function DriverDocumentsScreen({navigation}: Props) {
                     />
                   </View>
                   <Text numberOfLines={1} style={styles.docName}>
-                    {doc.title}
+                    {strings.driverDocuments[doc.id].title}
                   </Text>
                   <View style={styles.badge}>
                     <Text style={styles.badgeText}>
-                      {doc.optional ? 'Optional' : 'Required'}
+                      {doc.optional ? strings.common.optional : strings.common.required}
                     </Text>
                   </View>
                 </View>
@@ -82,7 +81,7 @@ export default function DriverDocumentsScreen({navigation}: Props) {
                     color={done ? colors.primary : colors.amber}
                   />
                   <Text style={[styles.status, done && styles.statusDone]}>
-                    {done ? 'Uploaded' : 'Not Uploaded'}
+                    {done ? strings.common.uploaded : strings.common.notUploaded}
                   </Text>
                 </View>
               </Pressable>
@@ -93,7 +92,7 @@ export default function DriverDocumentsScreen({navigation}: Props) {
 
       <BottomBar>
         <ActionButton
-          title="Submit Documents"
+          title={strings.common.submitDocuments}
           disabled={!requiredDone}
           onPress={onSubmit}
         />

@@ -1,4 +1,5 @@
 import {useSyncExternalStore} from 'react';
+import type {CarType, Experience, License, Transmission} from '@/constants/options';
 
 export type DriverProfile = {
   photoUri?: string;
@@ -7,10 +8,10 @@ export type DriverProfile = {
   phone: string;
   city: string;
   address: string;
-  experience?: string;
-  license?: string;
-  vehicles: string[];
-  transmission: string[];
+  experience?: Experience;
+  license?: License;
+  vehicles: CarType[];
+  transmission: Transmission[];
   bank?: string;
   account?: string;
 };
@@ -22,8 +23,8 @@ let profile: DriverProfile = {
   phone: '',
   city: '',
   address: '',
-  experience: '3-5 yrs',
-  license: 'LMV (Light Motor Vehicle)',
+  experience: '3to5',
+  license: 'lmv',
   vehicles: ['sedan', 'suv'],
   transmission: ['manual'],
 };

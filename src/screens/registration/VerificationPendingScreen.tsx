@@ -8,6 +8,7 @@ import {colors} from '@/constants/colors';
 import {MDI} from '@/constants/iconPaths';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'VerificationPending'>;
@@ -24,33 +25,34 @@ async function fetchVerificationStatus(): Promise<VerificationStatus> {
   return 'approved'; // or 'pending' or 'rejected'
 }
 
-// TODO: load these statuses from your API
-const STATUS_ROWS = [
-  {
-    icon: MDI_DOCS.cardAccountDetailsOutline,
-    name: "Driver's License",
-    status: 'Approved',
-    color: colors.green,
-    trailing: MDI_DOCS.checkCircleOutline,
-  },
-  {
-    icon: MDI.car,
-    name: 'Vehicle Registration',
-    status: 'Under Review',
-    color: colors.amber,
-    trailing: MDI_DOCS.dotsHorizontalCircleOutline,
-  },
-  {
-    icon: MDI_DOCS.shieldOutline,
-    name: 'Background Check',
-    status: 'Cleared',
-    color: colors.green,
-    trailing: MDI_DOCS.checkCircleOutline,
-  },
-];
-
 export default function VerificationPendingScreen({navigation}: Props) {
   const insets = useSafeAreaInsets();
+  const strings = useStrings();
+
+  // TODO: load these statuses from your API
+  const statusRows = [
+    {
+      icon: MDI_DOCS.cardAccountDetailsOutline,
+      name: strings.common.driversLicense,
+      status: strings.common.approved,
+      color: colors.green,
+      trailing: MDI_DOCS.checkCircleOutline,
+    },
+    {
+      icon: MDI.car,
+      name: strings.verificationPending.vehicleRegistration,
+      status: strings.common.underReview,
+      color: colors.amber,
+      trailing: MDI_DOCS.dotsHorizontalCircleOutline,
+    },
+    {
+      icon: MDI_DOCS.shieldOutline,
+      name: strings.common.backgroundCheck,
+      status: strings.common.cleared,
+      color: colors.green,
+      trailing: MDI_DOCS.checkCircleOutline,
+    },
+  ];
   const [checking, setChecking] = useState(false);
 
   const onCheckStatus = async () => {
@@ -105,36 +107,41 @@ export default function VerificationPendingScreen({navigation}: Props) {
           </View>
         </View>
 
-        <Text style={styles.title}>Verification Pending</Text>
-        <Text style={styles.subtitle}>
-          We're reviewing your documents. This usually takes 24-48 hours. We'll
-          notify you once you're ready to go online.
-        </Text>
+        <Text style={styles.title}>{strings.common.pendingTitle}</Text>
+        <Text style={styles.subtitle}>{strings.common.pendingSubtitle}</Text>
 
         <View style={[styles.card, styles.timeline]}>
           <View style={styles.step}>
             <View style={[styles.circle, styles.circleDone]}>
               <MdiIcon path={MDI.check} size={16} color="#FFFFFF" />
             </View>
-            <Text style={[styles.stepLabel, {color: colors.green}]}>Submitted</Text>
+            <Text style={[styles.stepLabel, {color: colors.green}]}>
+              {strings.common.submitted}
+            </Text>
           </View>
           <View style={styles.step}>
             <View style={[styles.circle, styles.circleNow]}>
               <MdiIcon path={MDI_DOCS.timerSand} size={16} color={colors.amber} />
             </View>
-            <Text style={[styles.stepLabel, {color: colors.amber}]}>Reviewing</Text>
+            <Text style={[styles.stepLabel, {color: colors.amber}]}>
+              {strings.common.reviewing}
+            </Text>
           </View>
           <View style={styles.step}>
             <View style={[styles.circle, styles.circleNext]}>
               <MdiIcon path={MDI_DOCS.lock} size={14} color={colors.textMuted} />
             </View>
-            <Text style={[styles.stepLabel, {color: colors.textMuted}]}>Approval</Text>
+            <Text style={[styles.stepLabel, {color: colors.textMuted}]}>
+              {strings.common.approval}
+            </Text>
           </View>
         </View>
 
         <View style={[styles.card, styles.statusCard]}>
-          <Text style={styles.statusTitle}>Document Status</Text>
-          {STATUS_ROWS.map(row => (
+          <Text style={styles.statusTitle}>
+            {strings.verificationPending.documentStatus}
+          </Text>
+          {statusRows.map(row => (
             <View key={row.name} style={styles.statusRow}>
               <MdiIcon path={row.icon} size={22} color={row.color} />
               <View style={styles.statusText}>
@@ -149,7 +156,7 @@ export default function VerificationPendingScreen({navigation}: Props) {
         </View>
 
         <ActionButton
-          title="Check Status"
+          title={strings.common.checkStatus}
           onPress={onCheckStatus}
           disabled={checking}
           iconPosition="left"
@@ -157,7 +164,7 @@ export default function VerificationPendingScreen({navigation}: Props) {
           style={styles.checkBtn}
         />
         <ActionButton
-          title="Contact Support"
+          title={strings.common.contactSupport}
           variant="outline"
           onPress={onSupport}
           iconPosition="left"

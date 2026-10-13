@@ -11,6 +11,7 @@ import { colors } from '@/constants/colors';
 import { MDI } from '@/constants/iconPaths';
 import { MDI_DOCS } from '@/constants/iconPathsDocs';
 import { fonts } from '@/constants/typography';
+import { useStrings } from '@/localization';
 import type { RootStackParamList } from '@/navigation/types';
 import { DRIVER_DOCS } from '@/constants/driverDocuments';
 import { useDriverDocuments } from '@/state/driverDocumentStore';
@@ -36,19 +37,8 @@ const CARD_BORDER = '#D1D5DB';
 
 // const DOCS = ["Driver's License", 'Aadhar Card', 'Profile Photo'];
 
-const VEHICLE_NAMES: Record<string, string> = {
-    sedan: 'Sedan',
-    suv: 'SUV',
-    hatchback: 'Hatchback',
-    luxury: 'Luxury',
-};
-const TRANSMISSION_NAMES: Record<string, string> = {
-    manual: 'Manual',
-    automatic: 'Automatic',
-};
-
-const names = (ids: string[], map: Record<string, string>) =>
-    ids.map(id => map[id] ?? id).join(', ') || '-';
+const names = <T extends string>(ids: T[], labels: Record<T, string>) =>
+    ids.map(id => labels[id]).join(', ') || '-';
 
 function Row({ label, value }: { label: string; value: string }) {
     return (
@@ -104,6 +94,7 @@ function Check({
 }
 
 export default function DriverReviewScreen({ navigation }: Props) {
+    const strings = useStrings();
     // Start unchecked so the driver gives consent on purpose.
     // (The design shows both ticked: use useState(true) to match it.)
     const [accurate, setAccurate] = useState(false);
@@ -120,60 +111,66 @@ export default function DriverReviewScreen({ navigation }: Props) {
     return (
         <View style={styles.container}>
             <StatusBar barStyle="dark-content" />
-            <DriverTitleBar title="Review Application" />
+            <DriverTitleBar title={strings.driverReview.title} />
 
             <ScrollView
                 style={styles.flex}
                 contentContainerStyle={styles.content}
                 showsVerticalScrollIndicator={false}>
-                <DriverStepTitle title="Review & Submit" step={4} />
+                <DriverStepTitle title={strings.common.reviewSubmit} step={4} />
 
-                <Text style={styles.heading}>Review & Submit</Text>
-                <Text style={styles.subtitle}>
-                    Please review your information carefully before submitting your
-                    application.
-                </Text>
+                <Text style={styles.heading}>{strings.common.reviewSubmit}</Text>
+                <Text style={styles.subtitle}>{strings.driverReview.subtitle}</Text>
 
                 <ReviewCard
-                    title="PERSONAL DETAILS"
+                    title={strings.driverReview.personalDetails}
                     onEdit={() => navigation.navigate('DriverPersonal')}>
-                    <Row label="Full Name" value={p.name || '-'} />
-                    <Row label="Phone" value={p.phone || '-'} />
-                    <Row label="Email" value={p.email || '-'} />
-                    <Row label="City" value={p.city || '-'} />
-                    <Row label="Address" value={p.address || '-'} />
+                    <Row label={strings.common.fullName} value={p.name || '-'} />
+                    <Row label={strings.common.phone} value={p.phone || '-'} />
+                    <Row label={strings.common.email} value={p.email || '-'} />
+                    <Row label={strings.driverReview.city} value={p.city || '-'} />
+                    <Row label={strings.driverReview.address} value={p.address || '-'} />
                 </ReviewCard>
 
                 <ReviewCard
-                    title="PERSONAL DETAILS"
+                    title={strings.driverReview.personalDetails}
                     onEdit={() => navigation.navigate('DriverPersonal', { fromReview: true })}>
-                    <Row label="Full Name" value={p.name || '-'} />
-                    <Row label="Phone" value={p.phone || '-'} />
-                    <Row label="Email" value={p.email || '-'} />
-                    <Row label="City" value={p.city || '-'} />
-                    <Row label="Address" value={p.address || '-'} />
+                    <Row label={strings.common.fullName} value={p.name || '-'} />
+                    <Row label={strings.common.phone} value={p.phone || '-'} />
+                    <Row label={strings.common.email} value={p.email || '-'} />
+                    <Row label={strings.driverReview.city} value={p.city || '-'} />
+                    <Row label={strings.driverReview.address} value={p.address || '-'} />
                 </ReviewCard>
 
                 <ReviewCard
-                    title="DRIVING EXPERIENCE"
+                    title={strings.driverReview.drivingExperience}
                     onEdit={() => navigation.navigate('DriverExperience', { fromReview: true })}>
-                    <Row label="Experience" value={p.experience ?? '-'} />
-                    <Row label="License Type" value={p.license ?? '-'} />
-                    <Row label="Vehicles" value={names(p.vehicles, VEHICLE_NAMES)} />
-                    <Row label="Transmission" value={names(p.transmission, TRANSMISSION_NAMES)} />
+                    <Row
+                        label={strings.driverReview.experience}
+                        value={p.experience ? strings.experience[p.experience] : '-'}
+                    />
+                    <Row
+                        label={strings.driverReview.licenseType}
+                        value={p.license ? strings.licenses[p.license] : '-'}
+                    />
+                    <Row label={strings.driverReview.vehicles} value={names(p.vehicles, strings.carTypes)} />
+                    <Row
+                        label={strings.driverReview.transmission}
+                        value={names(p.transmission, strings.transmissions)}
+                    />
                 </ReviewCard>
 
                 <ReviewCard
-                    title="DOCUMENTS SUBMITTED"
+                    title={strings.driverReview.documentsSubmitted}
                     onEdit={() => navigation.navigate('DriverDocuments')}>
                     {uploadedDocs.length === 0 ? (
-                        <Row label="Documents" value="None uploaded yet" />
+                        <Row label={strings.driverReview.documents} value={strings.common.noneUploaded} />
                     ) : (
                         uploadedDocs.map(d => (
                             <View key={d.id} style={styles.docRow}>
-                                <Text style={styles.docName}>{d.title}</Text>
+                                <Text style={styles.docName}>{strings.driverDocuments[d.id].title}</Text>
                                 <View style={styles.verified}>
-                                    <Text style={styles.verifiedText}>Uploaded</Text>
+                                    <Text style={styles.verifiedText}>{strings.common.uploaded}</Text>
                                     <MdiIcon path={MDI.check} size={14} color={colors.primary} />
                                 </View>
                             </View>
@@ -182,28 +179,26 @@ export default function DriverReviewScreen({ navigation }: Props) {
                 </ReviewCard>
 
                 <ReviewCard
-                    title="BANK DETAILS"
+                    title={strings.driverReview.bankDetails}
                     onEdit={() => navigation.navigate('DriverPayout')}>
-                    <Row label="Bank Name" value={p.bank ?? 'Not added yet'} />
-                    <Row label="Account Number" value={p.account ?? '-'} />
+                    <Row label={strings.common.bankName} value={p.bank ?? strings.common.notAddedYet} />
+                    <Row label={strings.driverReview.accountNumber} value={p.account ?? '-'} />
                 </ReviewCard>
 
-                <SectionLabel title="DECLARATIONS & CONSENT" style={styles.declLabel} />
+                <SectionLabel title={strings.driverReview.declarations} style={styles.declLabel} />
                 <View style={styles.declCard}>
                     <Check checked={accurate} onToggle={() => setAccurate(v => !v)}>
-                        I declare that all information provided is accurate and authentic to
-                        the best of my knowledge.
+                        {strings.driverReview.declareAccurate}
                     </Check>
                     <Check checked={terms} onToggle={() => setTerms(v => !v)}>
-                        I agree to the Terms of Service, Privacy Policy, and consent to a
-                        secure driver background check.
+                        {strings.driverReview.agreeTerms}
                     </Check>
                 </View>
             </ScrollView>
 
             <BottomBar>
                 <ActionButton
-                    title="Submit Application"
+                    title={strings.driverReview.submit}
                     disabled={!(accurate && terms)}
                     onPress={onSubmit}
                 />

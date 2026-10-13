@@ -9,28 +9,30 @@ import SectionLabel from '@/components/driver/SectionLabel';
 import {colors} from '@/constants/colors';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DriverVerificationRejected'>;
 
 const RED = '#E5242C';
 
-// TODO: load the rejected documents and reasons from your API
-const REJECTED = [
-  {
-    name: 'Driving License',
-    reason: 'The photo provided is too blurry to read the expiration date clearly.',
-    tip: 'Ensure good lighting and lay the card flat.',
-  },
-  {
-    name: 'Aadhar Card',
-    reason: 'The document appears to be expired. Please upload a current document.',
-    tip: 'Upload your most recent valid Aadhar card.',
-  },
-];
-
 export default function DriverVerificationRejectedScreen({navigation}: Props) {
   const insets = useSafeAreaInsets();
+  const strings = useStrings();
+
+  // TODO: load the rejected documents and reasons from your API
+  const rejected = [
+    {
+      name: strings.driverVerificationRejected.drivingLicense,
+      reason: strings.common.blurryReason,
+      tip: strings.common.blurryTip,
+    },
+    {
+      name: strings.common.aadharCard,
+      reason: strings.driverVerificationRejected.expiredReason,
+      tip: strings.driverVerificationRejected.expiredTip,
+    },
+  ];
 
   const onSupport = () => {
     // TODO: open support (Linking.openURL('tel:...') or a help screen)
@@ -48,30 +50,27 @@ export default function DriverVerificationRejectedScreen({navigation}: Props) {
           <MdiIcon path={MDI_DOCS.triangle} size={30} color={RED} />
         </View>
 
-        <Text style={styles.title}>Verification Rejected</Text>
-        <Text style={styles.subtitle}>
-          We couldn't verify some of your documents. Please review the issues
-          below and try again.
-        </Text>
+        <Text style={styles.title}>{strings.common.rejectedTitle}</Text>
+        <Text style={styles.subtitle}>{strings.common.rejectedSubtitle}</Text>
 
         <SectionLabel
-          title={`ATTENTION REQUIRED (${REJECTED.length})`}
+          title={strings.formatString(strings.driverVerificationRejected.attention, rejected.length) as string}
           style={styles.sectionLabel}
         />
 
-        {REJECTED.map(item => (
+        {rejected.map(item => (
           <View key={item.name} style={styles.card}>
             <View style={styles.accent} />
             <View style={styles.cardBody}>
               <View style={styles.head}>
                 <View style={styles.dot} />
                 <Text style={styles.docName}>{item.name}</Text>
-                <Text style={styles.badge}>REJECTED</Text>
+                <Text style={styles.badge}>{strings.common.rejected}</Text>
               </View>
               <Text style={styles.reason}>{item.reason}</Text>
               <View style={styles.tip}>
                 <Text style={styles.tipText}>
-                  <Text style={styles.tipLabel}>Tip: </Text>
+                  <Text style={styles.tipLabel}>{strings.driverVerificationRejected.tip}</Text>
                   {item.tip}
                 </Text>
               </View>
@@ -82,11 +81,11 @@ export default function DriverVerificationRejectedScreen({navigation}: Props) {
 
       <BottomBar>
         <ActionButton
-          title="Fix & Re-submit"
+          title={strings.driverVerificationRejected.fixResubmit}
           onPress={() => navigation.navigate('DriverDocuments')}
         />
         <ActionButton
-          title="Contact Support"
+          title={strings.common.contactSupport}
           variant="outline"
           onPress={onSupport}
           textColor={colors.placeholder}

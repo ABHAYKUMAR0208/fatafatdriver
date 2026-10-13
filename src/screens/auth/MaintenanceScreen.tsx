@@ -6,11 +6,14 @@ import {ClockIcon, ToolboxIcon} from '@/components/common/Icons';
 import {Description, Title} from '@/components/common/StatusText';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 
 // TODO: take this from the server response
 const ESTIMATED_MINUTES = 15;
 
 export default function MaintenanceScreen() {
+  const strings = useStrings();
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -19,15 +22,13 @@ export default function MaintenanceScreen() {
         <ToolboxIcon size={28} color={colors.amber} />
       </IconCircle>
 
-      <Title>Under Maintenance</Title>
-      <Description>
-        {"We're making improvements to serve you\nbetter. Please check back in a few minutes."}
-      </Description>
+      <Title>{strings.maintenance.title}</Title>
+      <Description>{strings.maintenance.description}</Description>
 
       <View style={styles.pill}>
         <ClockIcon size={14} color={colors.textBody} />
         <Text style={styles.pillText}>
-          Estimated: ~{ESTIMATED_MINUTES} minutes
+          {strings.formatString(strings.maintenance.estimate, ESTIMATED_MINUTES)}
         </Text>
       </View>
 

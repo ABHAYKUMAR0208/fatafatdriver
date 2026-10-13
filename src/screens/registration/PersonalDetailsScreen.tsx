@@ -15,13 +15,14 @@ import StepHeader from '@/components/registration/StepHeader';
 import {colors} from '@/constants/colors';
 import {MDI} from '@/constants/iconPaths';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
+import {GENDERS, Gender} from '@/constants/options';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import {setRiderProfile, useRiderProfile} from '@/state/riderProfileStore';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PersonalDetails'>;
 
-const GENDERS = ['Male', 'Female', 'Other', 'Prefer not to say'];
 const RING = 88;
 
 // digits -> "mm / dd / yyyy"
@@ -37,13 +38,14 @@ function formatDob(digits: string) {
 }
 
 export default function PersonalDetailsScreen({navigation, route}: Props) {
+  const strings = useStrings();
   const saved = useRiderProfile();
   const [photoUri, setPhotoUri] = useState<string | undefined>(saved.photoUri);
   const [name, setName] = useState(saved.name);
   const [email, setEmail] = useState(saved.email);
   const [phone, setPhone] = useState(saved.phone); // 10 digits only
   const [dobDigits, setDobDigits] = useState(saved.dobDigits);
-  const [gender, setGender] = useState<string | undefined>(saved.gender);
+  const [gender, setGender] = useState<Gender | undefined>(saved.gender);
 
   const onChoosePhoto = async () => {
     const result = await launchImageLibrary({
@@ -59,7 +61,10 @@ export default function PersonalDetailsScreen({navigation, route}: Props) {
 
   const onSave = () => {
     if (phone.length !== 10) {
-      Alert.alert('Invalid phone number', 'Please enter a valid 10-digit phone number.');
+      Alert.alert(
+        strings.personalDetails.invalidPhoneTitle,
+        strings.personalDetails.invalidPhoneMessage,
+      );
       return;
     }
     // TODO: validate the other fields, then also save with your API
@@ -85,8 +90,10 @@ export default function PersonalDetailsScreen({navigation, route}: Props) {
         extraScrollHeight={24}
         enableResetScrollToCoords={false}>
         <View style={styles.titleRow}>
-          <Text style={styles.title}>Personal Details</Text>
-          <Text style={styles.step}>Step 1 of 4</Text>
+          <Text style={styles.title}>{strings.personalDetails.title}</Text>
+          <Text style={styles.step}>
+            {strings.formatString(strings.common.stepOf, 1, 4)}
+          </Text>
         </View>
         <View style={styles.progress}>
           <SegmentedProgress step={1} />
@@ -117,28 +124,26 @@ export default function PersonalDetailsScreen({navigation, route}: Props) {
               </View>
             )}
           </View>
-          <Text style={styles.uploadTitle}>Upload Profile Photo</Text>
-          <Text style={styles.uploadSub}>
-            Clear, front-facing image. No sunglasses.
-          </Text>
+          <Text style={styles.uploadTitle}>{strings.personalDetails.uploadPhoto}</Text>
+          <Text style={styles.uploadSub}>{strings.personalDetails.photoHint}</Text>
           <Pressable style={styles.chooseBtn} onPress={onChoosePhoto}>
-            <Text style={styles.chooseText}>Choose Photo</Text>
+            <Text style={styles.chooseText}>{strings.personalDetails.choosePhoto}</Text>
           </Pressable>
         </View>
 
         <View style={styles.section}>
-          <SectionHeading title="IDENTITY" />
+          <SectionHeading title={strings.personalDetails.identity} />
         </View>
 
         <TextField
-          label="Full Legal Name"
-          placeholder="As it appears on your license"
+          label={strings.common.fullLegalName}
+          placeholder={strings.common.fullLegalNamePlaceholder}
           value={name}
           onChangeText={setName}
           autoCapitalize="words"
         />
         <TextField
-          label="Email Address"
+          label={strings.common.emailAddress}
           placeholder="driver@example.com"
           value={email}
           onChangeText={setEmail}
@@ -147,8 +152,8 @@ export default function PersonalDetailsScreen({navigation, route}: Props) {
           autoCorrect={false}
         />
         <TextField
-          label="Phone Number"
-          placeholder="10-digit mobile number"
+          label={strings.personalDetails.phoneNumber}
+          placeholder={strings.common.phonePlaceholder}
           value={phone}
           onChangeText={t => setPhone(t.replace(/\D/g, '').slice(0, 10))}
           keyboardType="phone-pad"
@@ -157,7 +162,7 @@ export default function PersonalDetailsScreen({navigation, route}: Props) {
         <View style={styles.twoCols}>
           <TextField
             containerStyle={styles.col}
-            label="Date of Birth"
+            label={strings.personalDetails.dateOfBirth}
             placeholder="mm / dd / yyyy"
             value={formatDob(dobDigits)}
             onChangeText={text =>
@@ -168,10 +173,10 @@ export default function PersonalDetailsScreen({navigation, route}: Props) {
           />
           <SelectField
             containerStyle={styles.col}
-            label="Gender"
-            placeholder="Select"
+            label={strings.personalDetails.gender}
+            placeholder={strings.personalDetails.select}
             value={gender}
-            options={GENDERS}
+            options={GENDERS.map(id => ({value: id, label: strings.genders[id]}))}
             onChange={setGender}
           />
         </View>
@@ -179,7 +184,7 @@ export default function PersonalDetailsScreen({navigation, route}: Props) {
 
       <BottomBar>
         <PrimaryButton
-          title="Save & Continue"
+          title={strings.personalDetails.saveContinue}
           onPress={onSave}
           style={styles.cta}
           icon={<ArrowRightIcon size={18} color="#FFFFFF" />}

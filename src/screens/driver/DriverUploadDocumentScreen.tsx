@@ -21,6 +21,7 @@ import {colors} from '@/constants/colors';
 import {getDriverDoc} from '@/constants/driverDocuments';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import {markDriverDocUploaded} from '@/state/driverDocumentStore';
 import type {RootStackParamList} from '@/navigation/types';
 
@@ -49,9 +50,11 @@ function formatExpiry(digits: string) {
 }
 
 export default function DriverUploadDocumentScreen({navigation, route}: Props) {
+  const strings = useStrings();
   const doc = getDriverDoc(route.params.docId);
+  const text = strings.driverDocuments[doc.id];
   const [images, setImages] = useState<(string | undefined)[]>(
-    doc.sides.map(() => undefined),
+    text.sides.map(() => undefined),
   );
   const [active, setActive] = useState(0);
   const [number, setNumber] = useState('');
@@ -101,7 +104,7 @@ export default function DriverUploadDocumentScreen({navigation, route}: Props) {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <DriverHeader
-        title={doc.uploadTitle}
+        title={text.uploadTitle}
         variant="plain"
         onBack={() => navigation.goBack()}
       />
@@ -123,15 +126,12 @@ export default function DriverUploadDocumentScreen({navigation, route}: Props) {
             />
           </View>
           <View style={styles.tipText}>
-            <Text style={styles.tipTitle}>Clear photos are required</Text>
-            <Text style={styles.tipBody}>
-              Ensure all corners are visible, text is legible, and there is no
-              glare. Place on a dark background.
-            </Text>
+            <Text style={styles.tipTitle}>{strings.common.photoTipTitle}</Text>
+            <Text style={styles.tipBody}>{strings.common.photoTipText}</Text>
           </View>
         </View>
 
-        {doc.sides.map((label, i) => (
+        {text.sides.map((label, i) => (
           <Pressable
             key={label}
             onPress={() => setActive(i)}
@@ -154,22 +154,22 @@ export default function DriverUploadDocumentScreen({navigation, route}: Props) {
         <View style={styles.btnRow}>
           <Pressable style={styles.srcBtn} onPress={onCamera}>
             <MdiIcon path={MDI_DOCS.cameraOutline} size={16} color="#FFFFFF" />
-            <Text style={styles.srcText}>Camera</Text>
+            <Text style={styles.srcText}>{strings.common.camera}</Text>
           </Pressable>
           <Pressable style={styles.srcBtn} onPress={onGallery}>
             <MdiIcon path={MDI_DOCS.imageOutline} size={16} color="#FFFFFF" />
-            <Text style={styles.srcText}>Gallery</Text>
+            <Text style={styles.srcText}>{strings.common.gallery}</Text>
           </Pressable>
         </View>
 
-        {doc.numberLabel ? (
+        {text.numberLabel ? (
           <DriverTextField
             containerStyle={styles.firstField}
-            label={doc.numberLabel}
+            label={text.numberLabel}
             labelColor={colors.placeholder}
             darkBorder
             style={styles.input}
-            placeholder="Enter exact number from card"
+            placeholder={strings.common.numberPlaceholder}
             value={number}
             onChangeText={setNumber}
             autoCapitalize="characters"
@@ -178,7 +178,7 @@ export default function DriverUploadDocumentScreen({navigation, route}: Props) {
         ) : null}
         {doc.hasExpiry ? (
           <DriverTextField
-            label="Expiry Date"
+            label={strings.common.expiryDate}
             labelColor={colors.placeholder}
             darkBorder
             style={styles.input}
@@ -193,7 +193,7 @@ export default function DriverUploadDocumentScreen({navigation, route}: Props) {
 
       <BottomBar>
         <ActionButton
-          title="Upload Document"
+          title={strings.driverUploadDocument.upload}
           disabled={!allPicked}
           onPress={onSave}
         />

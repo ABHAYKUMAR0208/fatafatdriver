@@ -22,6 +22,7 @@ import {colors} from '@/constants/colors';
 import {getDocument} from '@/constants/documents';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import {markUploaded} from '@/state/documentStore';
 import {formatDate} from '@/utils/formatDate';
 import type {RootStackParamList} from '@/navigation/types';
@@ -39,9 +40,11 @@ async function ensureCameraPermission() {
 }
 
 export default function UploadDocumentScreen({navigation, route}: Props) {
+  const strings = useStrings();
   const doc = getDocument(route.params.docId);
+  const text = strings.documents[doc.id];
   const [images, setImages] = useState<(string | undefined)[]>(
-    doc.sides.map(() => undefined),
+    text.sides.map(() => undefined),
   );
   const [active, setActive] = useState(0);
   const [number, setNumber] = useState('');
@@ -106,14 +109,11 @@ export default function UploadDocumentScreen({navigation, route}: Props) {
               color={colors.primary}
             />
           </View>
-          <Text style={styles.tipTitle}>Clear photos are required</Text>
-          <Text style={styles.tipText}>
-            Ensure all corners are visible, text is legible, and there is no
-            glare. Place on a dark background.
-          </Text>
+          <Text style={styles.tipTitle}>{strings.common.photoTipTitle}</Text>
+          <Text style={styles.tipText}>{strings.common.photoTipText}</Text>
         </View>
 
-        {doc.sides.map((label, i) => (
+        {text.sides.map((label, i) => (
           <Pressable
             key={label}
             onPress={() => setActive(i)}
@@ -129,19 +129,19 @@ export default function UploadDocumentScreen({navigation, route}: Props) {
         <View style={styles.btnRow}>
           <Pressable style={styles.srcBtn} onPress={onCamera}>
             <MdiIcon path={MDI_DOCS.camera} size={16} color="#FFFFFF" />
-            <Text style={styles.srcText}>Camera</Text>
+            <Text style={styles.srcText}>{strings.common.camera}</Text>
           </Pressable>
           <Pressable style={styles.srcBtn} onPress={onGallery}>
             <MdiIcon path={MDI_DOCS.image} size={16} color="#FFFFFF" />
-            <Text style={styles.srcText}>Gallery</Text>
+            <Text style={styles.srcText}>{strings.common.gallery}</Text>
           </Pressable>
         </View>
 
-        {doc.numberLabel ? (
+        {text.numberLabel ? (
           <TextField
             containerStyle={styles.firstField}
-            label={doc.numberLabel}
-            placeholder="Enter exact number from card"
+            label={text.numberLabel}
+            placeholder={strings.common.numberPlaceholder}
             value={number}
             onChangeText={setNumber}
             autoCapitalize="characters"
@@ -150,7 +150,7 @@ export default function UploadDocumentScreen({navigation, route}: Props) {
         ) : null}
         {doc.hasExpiry ? (
           <TextField
-            label="Expiry Date"
+            label={strings.common.expiryDate}
             placeholder="mm / dd / yyyy"
             value={formatDate(expiryDigits)}
             onChangeText={t => setExpiryDigits(t.replace(/\D/g, '').slice(0, 8))}
@@ -161,11 +161,11 @@ export default function UploadDocumentScreen({navigation, route}: Props) {
 
         {previewUri ? (
           <View style={styles.previewWrap}>
-            <Text style={styles.previewLabel}>Preview</Text>
+            <Text style={styles.previewLabel}>{strings.uploadDocument.preview}</Text>
             <View style={styles.preview}>
               <Image source={{uri: previewUri}} style={styles.previewImage} />
               <View style={styles.uploadedPill}>
-                <Text style={styles.uploadedText}>Uploaded</Text>
+                <Text style={styles.uploadedText}>{strings.common.uploaded}</Text>
               </View>
             </View>
           </View>
@@ -174,7 +174,7 @@ export default function UploadDocumentScreen({navigation, route}: Props) {
 
       <BottomBar>
         <ActionButton
-          title="Save Document"
+          title={strings.uploadDocument.save}
           disabled={!allPicked}
           onPress={onSave}
         />

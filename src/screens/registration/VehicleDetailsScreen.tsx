@@ -11,7 +11,9 @@ import SectionHeading from '@/components/registration/SectionHeading';
 import StepHeader from '@/components/registration/StepHeader';
 import {colors} from '@/constants/colors';
 import {MDI} from '@/constants/iconPaths';
+import {CarType, Colour, COLOURS} from '@/constants/options';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import {VEHICLES} from '@/constants/vehicles';
 import {setRiderProfile, useRiderProfile} from '@/state/riderProfileStore';
 import type {RootStackParamList} from '@/navigation/types';
@@ -19,36 +21,29 @@ import type {RootStackParamList} from '@/navigation/types';
 type Props = NativeStackScreenProps<RootStackParamList, 'VehicleDetails'>;
 
 // TODO: load these lists from your API
-const VEHICLE_TYPES = ['Sedan', 'Hatchback', 'SUV', 'Minivan'];
-const COLOURS = [
-  'White',
-  'Black',
-  'Silver',
-  'Grey',
-  'Red',
-  'Blue',
-  'Yellow',
-  'Green',
-  'Orange',
-  'Other',
-];
+const VEHICLE_TYPES: CarType[] = ['sedan', 'hatchback', 'suv', 'minivan'];
 const THIS_YEAR = new Date().getFullYear();
 const YEARS = Array.from({length: 26}, (_, i) => String(THIS_YEAR - i));
 
 export default function VehicleDetailsScreen({navigation, route}: Props) {
+  const strings = useStrings();
   const saved = useRiderProfile();
-  const [vehicleType, setVehicleType] = useState<string | undefined>(saved.vehicleType);
+  const [vehicleType, setVehicleType] = useState<CarType | undefined>(saved.vehicleType);
   const [number, setNumber] = useState(saved.vehicleNumber);
   const [model, setModel] = useState(saved.model);
-  const [colour, setColour] = useState<string | undefined>(saved.colour);
+  const [colour, setColour] = useState<Colour | undefined>(saved.colour);
   const [year, setYear] = useState<string | undefined>(saved.year);
 
   // Summary card. Cab matches the design; other services show their name.
   const vehicleId = route.params?.vehicle ?? saved.vehicle ?? 'cab';
   const vehicle = VEHICLES.find(v => v.id === vehicleId);
   const isCab = !vehicle || vehicle.id === 'cab';
-  const summaryTitle = isCab ? 'Standard Ride' : `${vehicle.name} Ride`;
-  const summarySub = isCab ? '4 Seats • Basic Luggage' : 'Selected service';
+  const summaryTitle = isCab
+    ? strings.vehicleDetails.standardRide
+    : strings.formatString(strings.vehicleDetails.serviceRide, strings.vehicles[vehicle.id]);
+  const summarySub = isCab
+    ? strings.vehicleDetails.standardRideInfo
+    : strings.vehicleDetails.selectedService;
 
   const onSave = () => {
     // TODO: validate the fields, then also save with your API
@@ -71,8 +66,8 @@ export default function VehicleDetailsScreen({navigation, route}: Props) {
     <View style={styles.flex}>
       <StatusBar barStyle="dark-content" />
       <StepHeader
-        title="Vehicle Details"
-        rightText="Step 3 of 4"
+        title={strings.vehicleDetails.title}
+        rightText={strings.formatString(strings.common.stepOf, 3, 4) as string}
         onBack={() => navigation.goBack()}
       />
 
@@ -95,24 +90,24 @@ export default function VehicleDetailsScreen({navigation, route}: Props) {
             <Text style={styles.summarySub}>{summarySub}</Text>
           </View>
           <View style={styles.active}>
-            <Text style={styles.activeText}>Active</Text>
+            <Text style={styles.activeText}>{strings.vehicleDetails.active}</Text>
           </View>
         </View>
 
         <View style={styles.section}>
-          <SectionHeading title="VEHICLE INFORMATION" />
+          <SectionHeading title={strings.vehicleDetails.vehicleInfo} />
         </View>
 
         <SelectField
-          label="Vehicle Type"
-          placeholder="Select Vehicle Type"
+          label={strings.vehicleDetails.vehicleType}
+          placeholder={strings.vehicleDetails.selectVehicleType}
           value={vehicleType}
-          options={VEHICLE_TYPES}
+          options={VEHICLE_TYPES.map(id => ({value: id, label: strings.carTypes[id]}))}
           onChange={setVehicleType}
         />
         <TextField
-          label="Vehicle Number"
-          placeholder="e.g. AB12 CDE"
+          label={strings.vehicleDetails.vehicleNumber}
+          placeholder={strings.vehicleDetails.vehicleNumberPlaceholder}
           value={number}
           onChangeText={setNumber}
           autoCapitalize="characters"
@@ -121,32 +116,32 @@ export default function VehicleDetailsScreen({navigation, route}: Props) {
         <View style={styles.twoCols}>
           <TextField
             containerStyle={styles.col}
-            label="Vehicle Model"
-            placeholder="e.g. Prius"
+            label={strings.vehicleDetails.vehicleModel}
+            placeholder={strings.vehicleDetails.vehicleModelPlaceholder}
             value={model}
             onChangeText={setModel}
           />
           <SelectField
             containerStyle={styles.col}
-            label="Vehicle Color"
-            placeholder="Select Colour"
+            label={strings.vehicleDetails.vehicleColour}
+            placeholder={strings.vehicleDetails.selectColour}
             value={colour}
-            options={COLOURS}
+            options={COLOURS.map(id => ({value: id, label: strings.colours[id]}))}
             onChange={setColour}
           />
         </View>
         <SelectField
-          label="Registration Year"
-          placeholder="Select Year"
+          label={strings.vehicleDetails.registrationYear}
+          placeholder={strings.vehicleDetails.selectYear}
           value={year}
-          options={YEARS}
+          options={YEARS.map(y => ({value: y, label: y}))}
           onChange={setYear}
         />
       </KeyboardAwareScrollView>
 
       <BottomBar>
         <PrimaryButton
-          title="Save Vehicle Details"
+          title={strings.vehicleDetails.save}
           onPress={onSave}
           style={styles.cta}
         />

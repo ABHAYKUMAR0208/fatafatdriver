@@ -14,6 +14,7 @@ import {ArrowLeftIcon, LockIcon} from '@/components/common/Icons';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'OtpVerification'>;
@@ -22,6 +23,7 @@ const OTP_LENGTH = 6;
 const RESEND_SECONDS = 30;
 
 export default function OtpVerificationScreen({navigation, route}: Props) {
+  const strings = useStrings();
   const insets = useSafeAreaInsets();
   const phone = route.params?.phone ?? '98765 43210'; // fallback for previewing
 
@@ -71,10 +73,12 @@ export default function OtpVerificationScreen({navigation, route}: Props) {
           <ArrowLeftIcon size={18} color={colors.textDark} />
         </Pressable>
 
-        <Text style={styles.title}>Verify Your Number</Text>
+        <Text style={styles.title}>{strings.otp.title}</Text>
         <Text style={styles.subtitle}>
-          Enter the 6-digit code sent to{' '}
-          <Text style={styles.phone}>+91 {phone}</Text>
+          {strings.formatString(
+            strings.otp.subtitle,
+            <Text style={styles.phone}>+91 {phone}</Text>,
+          )}
         </Text>
 
         <View style={styles.boxes}>
@@ -115,12 +119,14 @@ export default function OtpVerificationScreen({navigation, route}: Props) {
         </View>
 
         <View style={styles.resendRow}>
-          <Text style={styles.resendText}>{"Didn't receive the code? "}</Text>
+          <Text style={styles.resendText}>{strings.otp.notReceived}</Text>
           {seconds > 0 ? (
-            <Text style={styles.resendLink}>Resend in {timeLabel}</Text>
+            <Text style={styles.resendLink}>
+              {strings.formatString(strings.otp.resendIn, timeLabel)}
+            </Text>
           ) : (
             <Pressable onPress={onResend}>
-              <Text style={styles.resendLink}>Resend code</Text>
+              <Text style={styles.resendLink}>{strings.otp.resend}</Text>
             </Pressable>
           )}
         </View>
@@ -128,14 +134,14 @@ export default function OtpVerificationScreen({navigation, route}: Props) {
         <View style={styles.spacer} />
 
         <PrimaryButton
-          title="Verify & Continue"
+          title={strings.otp.verify}
           onPress={onVerify}
           disabled={!complete}
         />
 
         <View style={styles.safeRow}>
           <LockIcon size={12} color={colors.textMuted} />
-          <Text style={styles.safeText}>Your number is safe with us</Text>
+          <Text style={styles.safeText}>{strings.otp.safe}</Text>
         </View>
       </View>
     </KeyboardAvoidingView>

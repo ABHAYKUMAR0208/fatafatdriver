@@ -2,16 +2,19 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 
 type Props = {title: string; step: number; total?: number};
 
 export default function DriverStepTitle({title, step, total = 4}: Props) {
+  const strings = useStrings();
+
   return (
     <View>
       <View style={styles.row}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.step}>
-          Step {step} of {total}
+          {strings.formatString(strings.common.stepOf, step, total)}
         </Text>
       </View>
       <View style={styles.bars}>

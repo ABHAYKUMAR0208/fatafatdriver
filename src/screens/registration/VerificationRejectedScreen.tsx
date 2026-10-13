@@ -8,28 +8,28 @@ import BottomBar from '@/components/registration/BottomBar';
 import {colors} from '@/constants/colors';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'VerificationRejected'>;
 
-// TODO: load the rejected documents and reasons from your API
-const REJECTED = [
-  {
-    name: "Driver's License",
-    reason:
-      'The photo provided is too blurry to read the expiration date clearly.',
-    tip: 'Ensure good lighting and lay the card flat.',
-  },
-  {
-    name: 'Vehicle Insurance',
-    reason:
-      'The document appears to be expired. The coverage dates must be current.',
-    tip: 'Upload your most recent, active policy document.',
-  },
-];
-
 export default function VerificationRejectedScreen({navigation}: Props) {
   const insets = useSafeAreaInsets();
+  const strings = useStrings();
+
+  // TODO: load the rejected documents and reasons from your API
+  const rejected = [
+    {
+      name: strings.common.driversLicense,
+      reason: strings.common.blurryReason,
+      tip: strings.common.blurryTip,
+    },
+    {
+      name: strings.documents.insurance.title,
+      reason: strings.verificationRejected.expiredReason,
+      tip: strings.verificationRejected.expiredTip,
+    },
+  ];
 
   const onSupport = () => {
     // TODO: open support (Linking.openURL('tel:...') or a help screen)
@@ -60,13 +60,10 @@ export default function VerificationRejectedScreen({navigation}: Props) {
           />
         </View>
 
-        <Text style={styles.title}>Verification Rejected</Text>
-        <Text style={styles.subtitle}>
-          We couldn't verify some of your documents. Please review the issues
-          below and try again.
-        </Text>
+        <Text style={styles.title}>{strings.common.rejectedTitle}</Text>
+        <Text style={styles.subtitle}>{strings.common.rejectedSubtitle}</Text>
 
-        {REJECTED.map(item => (
+        {rejected.map(item => (
           <View key={item.name} style={styles.card}>
             <View style={styles.cardHead}>
               <View style={styles.iconCircle}>
@@ -79,7 +76,7 @@ export default function VerificationRejectedScreen({navigation}: Props) {
               <View style={styles.headText}>
                 <Text style={styles.docName}>{item.name}</Text>
                 <View style={styles.badge}>
-                  <Text style={styles.badgeText}>REJECTED</Text>
+                  <Text style={styles.badgeText}>{strings.common.rejected}</Text>
                 </View>
               </View>
             </View>
@@ -100,11 +97,11 @@ export default function VerificationRejectedScreen({navigation}: Props) {
 
       <BottomBar>
         <ActionButton
-          title="Re-submit Documents"
+          title={strings.verificationRejected.resubmit}
           onPress={() => navigation.navigate('DocumentChecklist')}
         />
         <ActionButton
-          title="Contact Support"
+          title={strings.common.contactSupport}
           variant="outline"
           onPress={onSupport}
           textColor={colors.primary}

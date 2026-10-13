@@ -5,11 +5,13 @@ import {MapPinIcon} from '@/components/common/Icons';
 import {Description, Title} from '@/components/common/StatusText';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 
 // TODO: drive this from the real reconnect progress (0 to 1)
 const PROGRESS = 0.65;
 
 export default function ResumeTripScreen() {
+  const strings = useStrings();
   const percent = Math.round(PROGRESS * 100);
 
   return (
@@ -19,27 +21,27 @@ export default function ResumeTripScreen() {
       <BrandLogo width={130} />
 
       <View style={styles.titleWrap}>
-        <Title>Resuming Your Trip</Title>
+        <Title>{strings.resumeTrip.title}</Title>
       </View>
-      <Description>
-        {'You have an active booking. Reconnecting you\nnow...'}
-      </Description>
+      <Description>{strings.resumeTrip.description}</Description>
 
       <View style={styles.track}>
         <View style={[styles.fill, {width: `${percent}%`}]} />
       </View>
-      <Text style={styles.percent}>{percent}% reconnected</Text>
+      <Text style={styles.percent}>
+        {strings.formatString(strings.resumeTrip.progress, percent)}
+      </Text>
 
       <View style={styles.card}>
         <View style={styles.cardRow}>
-          <Text style={styles.cardTitle}>Active Booking</Text>
+          <Text style={styles.cardTitle}>{strings.resumeTrip.activeBooking}</Text>
           <View style={styles.livePill}>
-            <Text style={styles.liveText}>LIVE</Text>
+            <Text style={styles.liveText}>{strings.resumeTrip.live}</Text>
           </View>
         </View>
         <View style={[styles.cardRow, styles.cardRowSecond]}>
           <MapPinIcon size={14} color={colors.primary} />
-          <Text style={styles.cardSub}>Connecting to last known location...</Text>
+          <Text style={styles.cardSub}>{strings.resumeTrip.connecting}</Text>
         </View>
       </View>
     </View>

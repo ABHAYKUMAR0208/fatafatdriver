@@ -1,8 +1,13 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {loadLanguage} from '@/localization';
 import RootNavigator from '@/navigation/RootNavigator';
 
 export default function App() {
+  useEffect(() => {
+    loadLanguage();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <RootNavigator />

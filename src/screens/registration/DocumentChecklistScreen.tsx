@@ -10,6 +10,7 @@ import {colors} from '@/constants/colors';
 import {DocumentConfig, DOCUMENTS} from '@/constants/documents';
 import {MDI} from '@/constants/iconPaths';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import {useDocuments} from '@/state/documentStore';
 import type {RootStackParamList} from '@/navigation/types';
 
@@ -18,6 +19,9 @@ type Props = NativeStackScreenProps<RootStackParamList, 'DocumentChecklist'>;
 type RowProps = {doc: DocumentConfig; done: boolean; onPress: () => void};
 
 function DocumentRow({doc, done, onPress}: RowProps) {
+  const strings = useStrings();
+  const text = strings.documents[doc.id];
+
   return (
     <Pressable onPress={onPress} style={[styles.card, done && styles.cardDone]}>
       <View style={[styles.iconTile, done && styles.iconTileDone]}>
@@ -29,24 +33,26 @@ function DocumentRow({doc, done, onPress}: RowProps) {
       </View>
 
       <View style={styles.cardText}>
-        <Text style={styles.docName}>{doc.title}</Text>
-        {doc.subtitle ? <Text style={styles.docHint}>{doc.subtitle}</Text> : null}
+        <Text style={styles.docName}>{text.title}</Text>
+        {text.subtitle ? <Text style={styles.docHint}>{text.subtitle}</Text> : null}
         <View style={styles.statusRow}>
           <View style={[styles.dot, done && styles.dotDone]} />
           <Text style={[styles.status, done && styles.statusDone]}>
-            {done ? 'Uploaded' : 'Not Uploaded'}
+            {done ? strings.common.uploaded : strings.common.notUploaded}
           </Text>
         </View>
       </View>
 
       {done ? (
         <View style={[styles.pill, styles.pillDone]}>
-          <Text style={[styles.pillText, styles.pillTextDone]}>Done</Text>
+          <Text style={[styles.pillText, styles.pillTextDone]}>
+            {strings.common.done}
+          </Text>
           <MdiIcon path={MDI.check} size={13} color={colors.green} />
         </View>
       ) : (
         <View style={styles.pill}>
-          <Text style={styles.pillText}>Required</Text>
+          <Text style={styles.pillText}>{strings.common.required}</Text>
         </View>
       )}
     </Pressable>
@@ -54,6 +60,7 @@ function DocumentRow({doc, done, onPress}: RowProps) {
 }
 
 export default function DocumentChecklistScreen({navigation}: Props) {
+  const strings = useStrings();
   const uploaded = useDocuments();
   const total = DOCUMENTS.length;
   const doneCount = DOCUMENTS.filter(d => uploaded[d.id]).length;
@@ -73,14 +80,11 @@ export default function DocumentChecklistScreen({navigation}: Props) {
         style={styles.flex}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Document Checklist</Text>
-        <Text style={styles.subtitle}>
-          Upload the following documents to activate your profile. Verification
-          usually takes 2-4 hours.
-        </Text>
+        <Text style={styles.title}>{strings.documentChecklist.title}</Text>
+        <Text style={styles.subtitle}>{strings.common.documentsIntro}</Text>
 
         <View style={styles.countRow}>
-          <Text style={styles.countLabel}>Documents Uploaded</Text>
+          <Text style={styles.countLabel}>{strings.documentChecklist.uploadedCount}</Text>
           <Text style={styles.count}>
             {doneCount} / {total}
           </Text>
@@ -101,7 +105,7 @@ export default function DocumentChecklistScreen({navigation}: Props) {
 
       <BottomBar>
         <ActionButton
-          title="Submit Documents"
+          title={strings.common.submitDocuments}
           disabled={!allDone}
           onPress={() => navigation.navigate('PayoutIntro')}
         />

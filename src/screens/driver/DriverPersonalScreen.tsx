@@ -8,12 +8,14 @@ import DriverHeader from '@/components/driver/DriverHeader';
 import {DriverTextField} from '@/components/driver/DriverFields';
 import DriverStepTitle from '@/components/driver/DriverStepTitle';
 import {colors} from '@/constants/colors';
+import {useStrings} from '@/localization';
 import {setDriverProfile, useDriverProfile} from '@/state/driverProfileStore';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DriverPersonal'>;
 
 export default function DriverPersonalScreen({navigation, route}: Props) {
+  const strings = useStrings();
   const saved = useDriverProfile();
   const [name, setName] = useState(saved.name);
   const [email, setEmail] = useState(saved.email);
@@ -34,7 +36,10 @@ export default function DriverPersonalScreen({navigation, route}: Props) {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <DriverHeader title="Personal Details" onBack={() => navigation.goBack()} />
+      <DriverHeader
+        title={strings.driverPersonal.title}
+        onBack={() => navigation.goBack()}
+      />
 
       <KeyboardAwareScrollView
         style={styles.flex}
@@ -44,18 +49,18 @@ export default function DriverPersonalScreen({navigation, route}: Props) {
         enableOnAndroid
         extraScrollHeight={24}
         enableResetScrollToCoords={false}>
-        <DriverStepTitle title="Personal Details" step={1} />
+        <DriverStepTitle title={strings.driverPersonal.title} step={1} />
 
         <View style={styles.form}>
           <DriverTextField
-            label="Full Legal Name"
-            placeholder="As it appears on your license"
+            label={strings.common.fullLegalName}
+            placeholder={strings.common.fullLegalNamePlaceholder}
             value={name}
             onChangeText={setName}
             autoCapitalize="words"
           />
           <DriverTextField
-            label="Email Address"
+            label={strings.common.emailAddress}
             placeholder="driver@example.com"
             value={email}
             onChangeText={setEmail}
@@ -64,23 +69,23 @@ export default function DriverPersonalScreen({navigation, route}: Props) {
             autoCorrect={false}
           />
           <DriverTextField
-            label="Mobile Number"
-            placeholder="10-digit mobile number"
+            label={strings.driverPersonal.mobileNumber}
+            placeholder={strings.common.phonePlaceholder}
             value={phone}
             onChangeText={t => setPhone(t.replace(/\D/g, '').slice(0, 10))}
             keyboardType="phone-pad"
             maxLength={10}
           />
           <DriverTextField
-            label="Current City"
-            placeholder="e.g. New Delhi"
+            label={strings.driverPersonal.city}
+            placeholder={strings.driverPersonal.cityPlaceholder}
             value={city}
             onChangeText={setCity}
             autoCapitalize="words"
           />
           <DriverTextField
-            label="Address"
-            placeholder="Enter your full address"
+            label={strings.driverPersonal.address}
+            placeholder={strings.driverPersonal.addressPlaceholder}
             value={address}
             onChangeText={setAddress}
           />
@@ -89,7 +94,7 @@ export default function DriverPersonalScreen({navigation, route}: Props) {
 
       <BottomBar>
         <ActionButton
-          title="Continue"
+          title={strings.common.continue}
           disabled={phone.length !== 10}
           onPress={onContinue}
         />

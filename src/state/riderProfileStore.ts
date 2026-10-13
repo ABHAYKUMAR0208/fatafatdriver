@@ -1,4 +1,5 @@
 import {useSyncExternalStore} from 'react';
+import type {CarType, Colour, Gender} from '@/constants/options';
 import type {VehicleId} from '@/constants/vehicles';
 
 export type RiderProfile = {
@@ -8,13 +9,13 @@ export type RiderProfile = {
   email: string;
   phone: string; // 10 digits
   dobDigits: string; // "12312027"
-  gender?: string;
+  gender?: Gender;
   // Vehicle Details
   vehicle?: VehicleId;
-  vehicleType?: string;
+  vehicleType?: CarType;
   vehicleNumber: string;
   model: string;
-  colour?: string;
+  colour?: Colour;
   year?: string;
   // Bank (filled later by the payout screen)
   bank?: string;

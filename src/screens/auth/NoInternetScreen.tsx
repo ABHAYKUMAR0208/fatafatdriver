@@ -12,6 +12,7 @@ import NetInfo from '@react-native-community/netinfo';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import WifiOffIcon from '@/components/common/WifiOffIcon';
 import {colors} from '@/constants/colors';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'NoInternet'>;
@@ -20,6 +21,7 @@ const LOGO_WIDTH = 88;
 const LOGO_RATIO = 1525 / 1031;
 
 export default function NoInternetScreen({navigation}: Props) {
+  const strings = useStrings();
   const [checking, setChecking] = useState(false);
 
   const onRetry = async () => {
@@ -45,10 +47,8 @@ export default function NoInternetScreen({navigation}: Props) {
         <WifiOffIcon size={28} color={colors.primary} />
       </View>
 
-      <Text style={styles.title}>No Internet Connection</Text>
-      <Text style={styles.description}>
-        Please check your Wi-Fi or mobile data and try again.
-      </Text>
+      <Text style={styles.title}>{strings.noInternet.title}</Text>
+      <Text style={styles.description}>{strings.noInternet.description}</Text>
 
       <Pressable
         onPress={onRetry}
@@ -56,7 +56,7 @@ export default function NoInternetScreen({navigation}: Props) {
         {checking ? (
           <ActivityIndicator color="#FFFFFF" />
         ) : (
-          <Text style={styles.buttonText}>Retry Connection</Text>
+          <Text style={styles.buttonText}>{strings.noInternet.retry}</Text>
         )}
       </Pressable>
 

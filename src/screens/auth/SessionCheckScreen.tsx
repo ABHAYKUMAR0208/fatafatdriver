@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors } from '@/constants/colors';
+import { useStrings } from '@/localization';
 import type { RootStackParamList } from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SessionCheck'>;
@@ -19,6 +20,8 @@ const LOGO_RATIO = 1525 / 1031;
 const SESSION_CHECK_MS = 2000;
 
 export default function SessionCheckScreen({ navigation }: Props) {
+  const strings = useStrings();
+
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
     let cancelled = false;
@@ -56,7 +59,7 @@ export default function SessionCheckScreen({ navigation }: Props) {
         size="large"
         color={colors.primary}
       />
-      <Text style={styles.message}>Checking your session...</Text>
+      <Text style={styles.message}>{strings.sessionCheck.message}</Text>
     </View>
   );
 }

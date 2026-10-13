@@ -6,6 +6,7 @@ import {ArrowUpCircleIcon} from '@/components/common/Icons';
 import {Description, Title} from '@/components/common/StatusText';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 
 // TODO: take the version from the server response
 const LATEST_VERSION = '4.3.0';
@@ -22,6 +23,8 @@ async function openStore() {
 }
 
 export default function UpdateRequiredScreen() {
+  const strings = useStrings();
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -30,19 +33,19 @@ export default function UpdateRequiredScreen() {
         <ArrowUpCircleIcon size={28} color={colors.primary} />
       </IconCircle>
 
-      <Title>Update Required</Title>
-      <Description>
-        {'A new version is available with important\nsecurity fixes and performance\nimprovements.'}
-      </Description>
+      <Title>{strings.updateRequired.title}</Title>
+      <Description>{strings.updateRequired.description}</Description>
 
       <View style={styles.pill}>
-        <Text style={styles.pillText}>v{LATEST_VERSION} now available</Text>
+        <Text style={styles.pillText}>
+          {strings.formatString(strings.updateRequired.available, LATEST_VERSION)}
+        </Text>
       </View>
 
       <Pressable
         onPress={openStore}
         style={({pressed}) => [styles.button, pressed && styles.buttonPressed]}>
-        <Text style={styles.buttonText}>Update Now</Text>
+        <Text style={styles.buttonText}>{strings.updateRequired.updateNow}</Text>
       </Pressable>
 
       <View style={styles.logo}>
