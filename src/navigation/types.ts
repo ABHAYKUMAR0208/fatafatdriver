@@ -1,6 +1,7 @@
 import type {VehicleId} from '@/constants/vehicles';
 import type {DocId} from '@/constants/documents';
 import type {DriverDocId} from '@/constants/driverDocuments';
+import type {NavigatorScreenParams} from '@react-navigation/native';
 
 
 export type RootStackParamList = {
@@ -32,5 +33,13 @@ export type RootStackParamList = {
   DriverReview: undefined;
   DriverVerificationPending: undefined;
   DriverVerificationRejected: undefined;
-  Home: undefined;
+  Home: NavigatorScreenParams<MainTabParamList> | undefined;
+  Alerts: undefined;
+};
+
+export type MainTabParamList = {
+  HomeTab: undefined;
+  Trips: undefined;
+  Earnings: undefined;
+  Profile: undefined;
 };

@@ -45,7 +45,7 @@ export default function DriverVerificationPendingScreen({navigation}: Props) {
         navigation.navigate('DriverVerificationRejected');
       } else if (status === 'approved') {
         // TODO: open the driver home / dashboard here, for example
-        // navigation.reset({index: 0, routes: [{name: 'DriverHome'}]});
+        navigation.reset({index: 0, routes: [{name: 'Home'}]});
       }
       // 'pending': stay on this screen
     } finally {

@@ -30,7 +30,8 @@ import DriverReviewScreen from '@/screens/driver/DriverReviewScreen';
 import DriverVerificationPendingScreen from '@/screens/driver/DriverVerificationPendingScreen';
 import DriverVerificationRejectedScreen from '@/screens/driver/DriverVerificationRejectedScreen';
 
-import HomeScreen from '@/screens/tabs/HomeScreen';
+import MainTabs from './MainTabs';
+import AlertsScreen from '@/screens/tabs/AlertsScreen';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -70,8 +71,8 @@ export default function RootNavigator() {
                 <Stack.Screen name="DriverVerificationPending" component={DriverVerificationPendingScreen} />
                 <Stack.Screen name="DriverVerificationRejected" component={DriverVerificationRejectedScreen} />
 
-
-                <Stack.Screen name="Home" component={HomeScreen} />
+                <Stack.Screen name="Home" component={MainTabs} />
+                <Stack.Screen name="Alerts" component={AlertsScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

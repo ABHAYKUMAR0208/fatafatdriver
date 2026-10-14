@@ -1,6 +1,7 @@
 import {useSyncExternalStore} from 'react';
 
 export type DriverProfile = {
+  photoUri?: string;
   name: string;
   email: string;
   phone: string;
