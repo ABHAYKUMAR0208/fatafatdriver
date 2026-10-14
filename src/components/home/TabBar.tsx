@@ -4,6 +4,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import type {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import {isWithinServiceHours} from '@/utils/serviceHours';
 import {
   BellIcon,
@@ -16,34 +17,36 @@ import {
   WalletIcon,
 } from './TabIcons';
 
+export type TabKey = 'HomeTab' | 'Trips' | 'Earnings' | 'Profile' | 'Alerts';
+
+// Labels are in strings.tabs
 export type TabItem = {
-  key: string;
-  label: string;
+  key: TabKey;
   Icon: React.ComponentType<TabIconProps>;
 };
 
 // Icons used under the Home screen (online / offline)
 export const HOME_TAB_ITEMS: TabItem[] = [
-  {key: 'HomeTab', label: 'Home', Icon: HomeIcon},
-  {key: 'Trips', label: 'Trips', Icon: NavigationIcon},
-  {key: 'Earnings', label: 'Earnings', Icon: TrendingUpIcon},
-  {key: 'Profile', label: 'Profile', Icon: UserIcon},
+  {key: 'HomeTab', Icon: HomeIcon},
+  {key: 'Trips', Icon: NavigationIcon},
+  {key: 'Earnings', Icon: TrendingUpIcon},
+  {key: 'Profile', Icon: UserIcon},
 ];
 
 // Icons used under the Service Hours Locked screen (as in the design)
 export const LOCKED_TAB_ITEMS: TabItem[] = [
-  {key: 'HomeTab', label: 'Home', Icon: HomeIcon},
-  {key: 'Trips', label: 'Trips', Icon: MapPinIcon},
-  {key: 'Earnings', label: 'Earnings', Icon: WalletIcon},
-  {key: 'Profile', label: 'Profile', Icon: UserIcon},
+  {key: 'HomeTab', Icon: HomeIcon},
+  {key: 'Trips', Icon: MapPinIcon},
+  {key: 'Earnings', Icon: WalletIcon},
+  {key: 'Profile', Icon: UserIcon},
 ];
 
 // The Alerts screen shows "Alerts" in the last slot (as in the design)
 export const ALERTS_TAB_ITEMS: TabItem[] = [
-  {key: 'HomeTab', label: 'Home', Icon: HomeIcon},
-  {key: 'Trips', label: 'Trips', Icon: MapPinIcon},
-  {key: 'Earnings', label: 'Earnings', Icon: WalletIcon},
-  {key: 'Alerts', label: 'Alerts', Icon: BellIcon},
+  {key: 'HomeTab', Icon: HomeIcon},
+  {key: 'Trips', Icon: MapPinIcon},
+  {key: 'Earnings', Icon: WalletIcon},
+  {key: 'Alerts', Icon: BellIcon},
 ];
 
 type ViewProps = {
@@ -55,6 +58,7 @@ type ViewProps = {
 // Plain tab bar (no navigator needed), used by Alerts
 export function TabBarView({items, activeKey, onPress}: ViewProps) {
   const insets = useSafeAreaInsets();
+  const strings = useStrings();
 
   return (
     <View style={[styles.bar, {paddingBottom: Math.max(insets.bottom, 10)}]}>
@@ -71,7 +75,7 @@ export function TabBarView({items, activeKey, onPress}: ViewProps) {
                 color={active ? colors.primary : colors.textSecondary}
               />
               <Text style={[styles.label, active ? styles.labelActive : styles.labelIdle]}>
-                {item.label}
+                {strings.tabs[item.key]}
               </Text>
             </View>
           </Pressable>

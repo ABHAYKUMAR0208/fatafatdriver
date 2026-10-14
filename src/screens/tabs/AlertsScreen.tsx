@@ -7,6 +7,7 @@ import {ALERTS_TAB_ITEMS, TabBarView} from '@/components/home/TabBar';
 import {colors} from '@/constants/colors';
 import {MDI_HOME} from '@/constants/iconPathsHome';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Alerts'>;
@@ -15,53 +16,54 @@ type AlertItem = {
   id: string;
   title: string;
   body: string;
-  time: string;
+  time: React.ReactNode;
   icon: string;
   iconColor: string;
   tint: string;
 };
 
-// TODO: load the alerts from your API
-const ALERTS: AlertItem[] = [
-  {
-    id: '1',
-    title: 'New bonus available',
-    body: 'Complete 5 trips for ₹500 bonus',
-    time: '2h ago',
-    icon: MDI_HOME.starOutline,
-    iconColor: colors.primary,
-    tint: colors.primaryLight,
-  },
-  {
-    id: '2',
-    title: 'Payment received',
-    body: '₹1,240 credited to bank',
-    time: '5h ago',
-    icon: MDI_HOME.walletOutline,
-    iconColor: colors.green,
-    tint: colors.greenLight,
-  },
-  {
-    id: '3',
-    title: 'Document expiring',
-    body: 'Your insurance expires in 7 days',
-    time: '1d ago',
-    icon: MDI_HOME.alertOutline,
-    iconColor: colors.primary,
-    tint: colors.primaryLight,
-  },
-  {
-    id: '4',
-    title: 'Trip cancelled',
-    body: 'Rider cancelled trip #4521',
-    time: '2d ago',
-    icon: MDI_HOME.close,
-    iconColor: colors.textSecondary,
-    tint: colors.surfaceAlt,
-  },
-];
-
 export default function AlertsScreen({navigation}: Props) {
+  const strings = useStrings();
+
+  // TODO: load the alerts from your API
+  const alerts: AlertItem[] = [
+    {
+      id: '1',
+      title: strings.alerts.bonusTitle,
+      body: strings.alerts.bonusBody,
+      time: strings.formatString(strings.alerts.hoursAgo, 2),
+      icon: MDI_HOME.starOutline,
+      iconColor: colors.primary,
+      tint: colors.primaryLight,
+    },
+    {
+      id: '2',
+      title: strings.alerts.paymentTitle,
+      body: strings.alerts.paymentBody,
+      time: strings.formatString(strings.alerts.hoursAgo, 5),
+      icon: MDI_HOME.walletOutline,
+      iconColor: colors.green,
+      tint: colors.greenLight,
+    },
+    {
+      id: '3',
+      title: strings.alerts.expiringTitle,
+      body: strings.alerts.expiringBody,
+      time: strings.formatString(strings.alerts.daysAgo, 1),
+      icon: MDI_HOME.alertOutline,
+      iconColor: colors.primary,
+      tint: colors.primaryLight,
+    },
+    {
+      id: '4',
+      title: strings.alerts.cancelledTitle,
+      body: strings.alerts.cancelledBody,
+      time: strings.formatString(strings.alerts.daysAgo, 2),
+      icon: MDI_HOME.close,
+      iconColor: colors.textSecondary,
+      tint: colors.surfaceAlt,
+    },
+  ];
   const [allRead, setAllRead] = useState(false);
 
   const onMarkAll = () => {
@@ -87,7 +89,7 @@ export default function AlertsScreen({navigation}: Props) {
         right={
           allRead ? null : (
             <Pressable onPress={onMarkAll} hitSlop={8}>
-              <Text style={styles.markAll}>Mark all as read</Text>
+              <Text style={styles.markAll}>{strings.alerts.markAllRead}</Text>
             </Pressable>
           )
         }
@@ -97,9 +99,9 @@ export default function AlertsScreen({navigation}: Props) {
         style={styles.flex}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}>
-        <Text style={styles.section}>TODAY</Text>
+        <Text style={styles.section}>{strings.alerts.today}</Text>
 
-        {ALERTS.map(item => (
+        {alerts.map(item => (
           <View key={item.id} style={styles.card}>
             <View style={[styles.iconWrap, {backgroundColor: item.tint}]}>
               <MdiIcon path={item.icon} size={22} color={item.iconColor} />

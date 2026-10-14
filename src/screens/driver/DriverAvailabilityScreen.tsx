@@ -111,7 +111,7 @@ export default function DriverAvailabilityScreen({navigation}: Props) {
                 onPress={() => toggleTiming(t.id)}
                 style={[styles.time, on && styles.timeOn]}>
                 <Text style={[styles.timeName, on && styles.timeNameOn]}>
-                  {strings.driverAvailability.timingNames[t.id]}
+                  {strings.dayParts[t.id]}
                 </Text>
                 <Text style={[styles.timeRange, on && styles.timeRangeOn]}>
                   {t.range}

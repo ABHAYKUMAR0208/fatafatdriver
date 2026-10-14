@@ -3,14 +3,21 @@ import {StatusBar, StyleSheet, Text, View} from 'react-native';
 import TitleBar from '@/components/home/TitleBar';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 
-export default function PlaceholderTabScreen({name}: {name: string}) {
+type Props = {name: 'Trips' | 'Earnings' | 'Profile'};
+
+export default function PlaceholderTabScreen({name}: Props) {
+  const strings = useStrings();
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <TitleBar />
       <View style={styles.body}>
-        <Text style={styles.text}>{name} (coming soon)</Text>
+        <Text style={styles.text}>
+          {strings.formatString(strings.tabs.comingSoon, strings.tabs[name])}
+        </Text>
       </View>
     </View>
   );

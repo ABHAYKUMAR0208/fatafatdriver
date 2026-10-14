@@ -3,6 +3,7 @@ import type {DriverDocId} from '@/constants/driverDocuments';
 import type {
   CarType,
   Colour,
+  DayPart,
   Experience,
   Gender,
   License,
@@ -139,6 +140,13 @@ const licenses: Record<License, string> = {
 const transmissions: Record<Transmission, string> = {
   manual: 'Manual',
   automatic: 'Automatic',
+};
+
+const dayParts: Record<DayPart, string> = {
+  morning: 'Morning',
+  afternoon: 'Afternoon',
+  evening: 'Evening',
+  night: 'Night',
 };
 
 export const en = {
@@ -398,12 +406,6 @@ export const en = {
       outstation: {name: 'Outstation', sub: 'Multi-day out of city trips'},
     },
     timings: 'PREFERRED TIMINGS',
-    timingNames: {
-      morning: 'Morning',
-      afternoon: 'Afternoon',
-      evening: 'Evening',
-      night: 'Night',
-    },
     zone: 'PREFERRED OPERATING ZONE',
     region: 'Operating Region',
     regionPlaceholder: 'Enter your operating region',
@@ -454,6 +456,58 @@ export const en = {
     tip: 'Tip: ',
     fixResubmit: 'Fix & Re-submit',
   },
+  tabs: {
+    HomeTab: 'Home',
+    Trips: 'Trips',
+    Earnings: 'Earnings',
+    Profile: 'Profile',
+    Alerts: 'Alerts',
+    comingSoon: '{0} (coming soon)',
+  },
+  home: {
+    online: "You're Online",
+    offline: "You're Offline",
+    lookingForTrips: 'Looking for trip requests near you...',
+    tapToStart: 'Tap to start receiving trip requests',
+    goOnline: 'GO ONLINE',
+    goOffline: 'GO OFFLINE',
+    todaysEarnings: "TODAY'S EARNINGS",
+    trips: 'TRIPS',
+  },
+  onlineHome: {
+    driver: 'Driver',
+    rider: 'Rider',
+    partner: 'Partner',
+    badge: 'ONLINE',
+    waiting: 'Waiting for ride requests...',
+    bonusQuest: 'BONUS QUEST',
+    questTitle: 'Complete {0} more trips → earn {1} bonus',
+    todaysEarnings: "Today's Earnings",
+    trips: 'Trips',
+    goOffline: 'Go Offline',
+  },
+  alerts: {
+    markAllRead: 'Mark all as read',
+    today: 'TODAY',
+    bonusTitle: 'New bonus available',
+    bonusBody: 'Complete 5 trips for ₹500 bonus',
+    paymentTitle: 'Payment received',
+    paymentBody: '₹1,240 credited to bank',
+    expiringTitle: 'Document expiring',
+    expiringBody: 'Your insurance expires in 7 days',
+    cancelledTitle: 'Trip cancelled',
+    cancelledBody: 'Rider cancelled trip #4521',
+    hoursAgo: '{0}h ago',
+    daysAgo: '{0}d ago',
+  },
+  serviceHours: {
+    locked: 'Locked',
+    title: 'Service Hours Locked',
+    subtitle:
+      'Your service hours are outside the allowed window. You can go online during your scheduled hours.',
+    schedule: 'YOUR SCHEDULE',
+    viewSchedule: 'View Schedule',
+  },
   documents,
   driverDocuments,
   vehicles,
@@ -463,4 +517,5 @@ export const en = {
   experience,
   licenses,
   transmissions,
+  dayParts,
 };

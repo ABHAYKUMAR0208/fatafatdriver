@@ -10,6 +10,7 @@ import MapPlaceholder from '@/components/home/MapPlaceholder';
 import {colors} from '@/constants/colors';
 import {MDI_HOME} from '@/constants/iconPathsHome';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 import {useProfilePhoto} from '@/state/profilePhotoStore';
 import {isWithinServiceHours} from '@/utils/serviceHours';
@@ -36,6 +37,7 @@ function PowerIcon() {
 export default function HomeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const insets = useSafeAreaInsets();
+  const strings = useStrings();
   const photoUri = useProfilePhoto();
   const [online, setOnline] = useState(false);
   const [open, setOpen] = useState(isWithinServiceHours());
@@ -83,30 +85,30 @@ export default function HomeScreen() {
         <View style={styles.statusRow}>
           <View style={[styles.dot, online && styles.dotOnline]} />
           <Text style={styles.statusTitle}>
-            {online ? "You're Online" : "You're Offline"}
+            {online ? strings.home.online : strings.home.offline}
           </Text>
         </View>
         <Text style={styles.statusSub}>
-          {online
-            ? 'Looking for trip requests near you...'
-            : 'Tap to start receiving trip requests'}
+          {online ? strings.home.lookingForTrips : strings.home.tapToStart}
         </Text>
 
         <View style={styles.powerWrap}>
           <Pressable style={styles.power} onPress={onToggle}>
             <PowerIcon />
           </Pressable>
-          <Text style={styles.powerLabel}>{online ? 'GO OFFLINE' : 'GO ONLINE'}</Text>
+          <Text style={styles.powerLabel}>
+            {online ? strings.home.goOffline : strings.home.goOnline}
+          </Text>
         </View>
 
         <View style={styles.stats}>
           <View style={styles.stat}>
-            <Text style={styles.statLabel}>TODAY'S EARNINGS</Text>
+            <Text style={styles.statLabel}>{strings.home.todaysEarnings}</Text>
             <Text style={styles.statValue}>{TODAY.earnings}</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={[styles.stat, styles.statRight]}>
-            <Text style={styles.statLabel}>TRIPS</Text>
+            <Text style={styles.statLabel}>{strings.home.trips}</Text>
             <Text style={styles.statValue}>{TODAY.trips}</Text>
           </View>
         </View>

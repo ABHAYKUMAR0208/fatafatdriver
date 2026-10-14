@@ -30,3 +30,5 @@ export type License = (typeof LICENSES)[number];
 
 export const TRANSMISSIONS = ['manual', 'automatic'] as const;
 export type Transmission = (typeof TRANSMISSIONS)[number];
+
+export type DayPart = 'morning' | 'afternoon' | 'evening' | 'night';

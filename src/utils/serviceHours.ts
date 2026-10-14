@@ -1,5 +1,7 @@
+import type {DayPart} from '@/constants/options';
+
 export type ServiceWindow = {
-  label: string;
+  id: DayPart; // name is in strings.dayParts
   text: string;
   startHour: number; // inclusive, 0-24
   endHour: number; // exclusive, 0-24
@@ -7,8 +9,8 @@ export type ServiceWindow = {
 
 // TODO: load the rider's / driver's schedule from your API
 export const SERVICE_WINDOWS: ServiceWindow[] = [
-  {label: 'Morning', text: '6AM - 12PM', startHour: 6, endHour: 12},
-  {label: 'Evening', text: '6PM - 12AM', startHour: 18, endHour: 24},
+  {id: 'morning', text: '6AM - 12PM', startHour: 6, endHour: 12},
+  {id: 'evening', text: '6PM - 12AM', startHour: 18, endHour: 24},
 ];
 
 // For testing the Locked screen:

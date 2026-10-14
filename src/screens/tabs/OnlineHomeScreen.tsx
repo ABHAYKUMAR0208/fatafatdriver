@@ -8,6 +8,7 @@ import {BellIcon} from '@/components/home/TabIcons';
 import MapPlaceholder from '@/components/home/MapPlaceholder';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 import {useDisplayProfile} from '@/state/displayProfile';
 
@@ -24,6 +25,7 @@ type Props = {
 export default function OnlineHomeScreen({photoUri, onGoOffline}: Props) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const insets = useSafeAreaInsets();
+  const strings = useStrings();
   const {role, name} = useDisplayProfile();
 
   const remaining = Math.max(BONUS.total - BONUS.done, 0);
@@ -47,9 +49,9 @@ export default function OnlineHomeScreen({photoUri, onGoOffline}: Props) {
           <View style={styles.left}>
             <Avatar uri={photoUri} size={44} square flat />
             <View style={styles.who}>
-              <Text style={styles.role}>{role}</Text>
+              <Text style={styles.role}>{strings.onlineHome[role]}</Text>
               <Text style={styles.name} numberOfLines={1}>
-                {name}
+                {name ?? strings.onlineHome.partner}
               </Text>
             </View>
           </View>
@@ -64,7 +66,7 @@ export default function OnlineHomeScreen({photoUri, onGoOffline}: Props) {
           <View style={styles.centerBadge} pointerEvents="none">
             <View style={styles.onlinePill}>
               <View style={styles.onlineDot} />
-              <Text style={styles.onlineText}>ONLINE</Text>
+              <Text style={styles.onlineText}>{strings.onlineHome.badge}</Text>
             </View>
           </View>
         </View>
@@ -75,16 +77,16 @@ export default function OnlineHomeScreen({photoUri, onGoOffline}: Props) {
 
         <View style={styles.statusRow}>
           <View style={styles.dot} />
-          <Text style={styles.statusTitle}>You're Online</Text>
+          <Text style={styles.statusTitle}>{strings.home.online}</Text>
         </View>
-        <Text style={styles.statusSub}>Waiting for ride requests...</Text>
+        <Text style={styles.statusSub}>{strings.onlineHome.waiting}</Text>
 
         <View style={styles.quest}>
           <View style={styles.questTop}>
             <View style={styles.questText}>
-              <Text style={styles.questLabel}>BONUS QUEST</Text>
+              <Text style={styles.questLabel}>{strings.onlineHome.bonusQuest}</Text>
               <Text style={styles.questTitle}>
-                Complete {remaining} more trips → earn {BONUS.reward} bonus
+                {strings.formatString(strings.onlineHome.questTitle, String(remaining), BONUS.reward)}
               </Text>
             </View>
             <View style={styles.badge}>
@@ -100,17 +102,17 @@ export default function OnlineHomeScreen({photoUri, onGoOffline}: Props) {
 
         <View style={styles.stats}>
           <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Today's Earnings</Text>
+            <Text style={styles.statLabel}>{strings.onlineHome.todaysEarnings}</Text>
             <Text style={styles.statValue}>{TODAY.earnings}</Text>
           </View>
           <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Trips</Text>
+            <Text style={styles.statLabel}>{strings.onlineHome.trips}</Text>
             <Text style={styles.statValue}>{TODAY.trips}</Text>
           </View>
         </View>
 
         <Pressable style={styles.offlineBtn} onPress={onGoOffline}>
-          <Text style={styles.offlineText}>Go Offline</Text>
+          <Text style={styles.offlineText}>{strings.onlineHome.goOffline}</Text>
         </Pressable>
       </View>
     </View>

@@ -6,10 +6,12 @@ import TitleBar from '@/components/home/TitleBar';
 import {colors} from '@/constants/colors';
 import {MDI_HOME} from '@/constants/iconPathsHome';
 import {fonts} from '@/constants/typography';
+import {useStrings} from '@/localization';
 import {SERVICE_WINDOWS} from '@/utils/serviceHours';
 
 // Shown by the Home tab when the current time is outside the service hours.
 export default function ServiceHoursLockedScreen() {
+  const strings = useStrings();
   const onViewSchedule = () => {
     // TODO: open the full schedule screen
   };
@@ -20,7 +22,7 @@ export default function ServiceHoursLockedScreen() {
       <TitleBar
         right={
           <View style={styles.pill}>
-            <Text style={styles.pillText}>Locked</Text>
+            <Text style={styles.pillText}>{strings.serviceHours.locked}</Text>
           </View>
         }
       />
@@ -35,18 +37,15 @@ export default function ServiceHoursLockedScreen() {
           </View>
         </View>
 
-        <Text style={styles.title}>Service Hours Locked</Text>
-        <Text style={styles.subtitle}>
-          Your service hours are outside the allowed window. You can go online
-          during your scheduled hours.
-        </Text>
+        <Text style={styles.title}>{strings.serviceHours.title}</Text>
+        <Text style={styles.subtitle}>{strings.serviceHours.subtitle}</Text>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>YOUR SCHEDULE</Text>
+          <Text style={styles.cardTitle}>{strings.serviceHours.schedule}</Text>
           <View style={styles.tiles}>
             {SERVICE_WINDOWS.map(w => (
-              <View key={w.label} style={styles.tile}>
-                <Text style={styles.tileLabel}>{w.label}</Text>
+              <View key={w.id} style={styles.tile}>
+                <Text style={styles.tileLabel}>{strings.dayParts[w.id]}</Text>
                 <Text style={styles.tileValue}>{w.text}</Text>
               </View>
             ))}
@@ -54,7 +53,7 @@ export default function ServiceHoursLockedScreen() {
         </View>
 
         <ActionButton
-          title="View Schedule"
+          title={strings.serviceHours.viewSchedule}
           onPress={onViewSchedule}
           style={styles.button}
         />
