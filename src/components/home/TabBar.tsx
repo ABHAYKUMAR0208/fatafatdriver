@@ -8,6 +8,8 @@ import {useStrings} from '@/localization';
 import {isWithinServiceHours} from '@/utils/serviceHours';
 import {
   BellIcon,
+  CarIcon,
+  CashIcon,
   HomeIcon,
   MapPinIcon,
   NavigationIcon,
@@ -22,6 +24,8 @@ export type TabKey = 'HomeTab' | 'Trips' | 'Earnings' | 'Profile' | 'Alerts';
 // Labels are in strings.tabs
 export type TabItem = {
   key: TabKey;
+  // use another label from strings.tabs (e.g. 'Account' for the Profile slot)
+  labelKey?: 'Account';
   Icon: React.ComponentType<TabIconProps>;
 };
 
@@ -41,12 +45,21 @@ export const LOCKED_TAB_ITEMS: TabItem[] = [
   {key: 'Profile', Icon: UserIcon},
 ];
 
+// Icons used under the Earnings screen (as in the design: car, cash, "Account")
+export const EARNINGS_TAB_ITEMS: TabItem[] = [
+  {key: 'HomeTab', Icon: HomeIcon},
+  {key: 'Trips', Icon: CarIcon},
+  {key: 'Earnings', Icon: CashIcon},
+  {key: 'Profile', Icon: UserIcon, labelKey: 'Account'},
+];
+
 // The Alerts screen shows "Alerts" in the last slot (as in the design)
 export const ALERTS_TAB_ITEMS: TabItem[] = [
   {key: 'HomeTab', Icon: HomeIcon},
   {key: 'Trips', Icon: MapPinIcon},
   {key: 'Earnings', Icon: WalletIcon},
   {key: 'Alerts', Icon: BellIcon},
+  {key: 'Profile', Icon: UserIcon, labelKey: 'Account'},
 ];
 
 type ViewProps = {
@@ -75,7 +88,7 @@ export function TabBarView({items, activeKey, onPress}: ViewProps) {
                 color={active ? colors.primary : colors.textSecondary}
               />
               <Text style={[styles.label, active ? styles.labelActive : styles.labelIdle]}>
-                {strings.tabs[item.key]}
+                {strings.tabs[item.labelKey ?? item.key]}
               </Text>
             </View>
           </Pressable>
@@ -105,7 +118,13 @@ export default function MainTabBar({state, navigation}: BottomTabBarProps) {
   };
 
   // the Locked screen uses a different icon set in the design
-  const items = isWithinServiceHours() ? HOME_TAB_ITEMS : LOCKED_TAB_ITEMS;
+  // (and the Earnings screen has its own icon set too)
+  const items =
+    activeKey === 'Earnings'
+      ? EARNINGS_TAB_ITEMS
+      : isWithinServiceHours()
+      ? HOME_TAB_ITEMS
+      : LOCKED_TAB_ITEMS;
 
   return <TabBarView items={items} activeKey={activeKey} onPress={onPress} />;
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import MainTabBar from '@/components/home/TabBar';
+import EarningsScreen from '@/screens/tabs/EarningsScreen';
 import HomeScreen from '@/screens/tabs/HomeScreen';
 import PlaceholderTabScreen from '@/screens/tabs/PlaceholderTabScreen';
 import type {MainTabParamList} from './types';
@@ -8,7 +9,6 @@ import type {MainTabParamList} from './types';
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const TripsScreen = () => <PlaceholderTabScreen name="Trips" />;
-const EarningsScreen = () => <PlaceholderTabScreen name="Earnings" />;
 const ProfileScreen = () => <PlaceholderTabScreen name="Profile" />;
 
 export default function MainTabs() {

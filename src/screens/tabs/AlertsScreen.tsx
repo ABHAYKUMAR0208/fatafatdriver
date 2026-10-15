@@ -76,7 +76,7 @@ export default function AlertsScreen({navigation}: Props) {
       return;
     }
     if (key === 'HomeTab') {
-      navigation.navigate('Home');
+      navigation.navigate('Home', {screen: 'HomeTab'});
     } else {
       navigation.navigate('Home', {screen: key as 'Trips' | 'Earnings' | 'Profile'});
     }

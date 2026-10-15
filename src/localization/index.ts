@@ -29,14 +29,20 @@ function applyLanguage(language: string) {
 // Call this from the language picker (e.g. the settings screen).
 export function setLanguage(language: Language) {
   applyLanguage(language);
-  AsyncStorage.setItem(STORAGE_KEY, language);
+  AsyncStorage.setItem(STORAGE_KEY, language).catch(() => {});
 }
+
+
 
 // Restores the language the user picked last time.
 export async function loadLanguage() {
-  const saved = await AsyncStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    applyLanguage(saved);
+   try {
+    const saved = await AsyncStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      applyLanguage(saved);
+    }
+  } catch {
+    // storage not available: keep the phone's language
   }
 }
 

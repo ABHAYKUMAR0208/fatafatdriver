@@ -28,4 +28,27 @@ export const colors = {
   amberText: '#B45309',
   amberPill: '#FDEFC3',
   tile: '#FDE3E8',
+
+    // Earnings screen
+  navyStart: '#14142B',
+  navyEnd: '#0B2F66',
+  textOnDarkMuted: '#9CA3C0',
+  greenOnDark: '#4ADE80',
+  greenOnDarkBg: 'rgba(34,197,94,0.18)',
+  redOnDark: '#F87171',
+  redOnDarkBg: 'rgba(239,68,68,0.18)',
+  amberBorder: '#FBE6AE',
+
+    // Payout screens
+  red: '#DC2626',
+  redLight: '#FDE2E4',
+  redBorder: '#FAD4D6',
+  faded: '#C4C7CE',
+  fadedRed: '#F5A5A5',
+  pinkTint: '#FDECEC',
+  amberTint: '#FDE9C7',
+  amberStrong: '#F5A623',
+  borderDark: '#1F2937',
+  greenPill: '#DCFCE7',
 };
+

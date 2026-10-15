@@ -29,6 +29,9 @@ import DriverPayoutScreen from '@/screens/driver/DriverPayoutScreen';
 import DriverReviewScreen from '@/screens/driver/DriverReviewScreen';
 import DriverVerificationPendingScreen from '@/screens/driver/DriverVerificationPendingScreen';
 import DriverVerificationRejectedScreen from '@/screens/driver/DriverVerificationRejectedScreen';
+import PayoutHistoryScreen from '@/screens/earnings/PayoutHistoryScreen';
+import EarningsActivityScreen from '@/screens/earnings/EarningsActivityScreen';
+import PayoutDetailScreen from '@/screens/earnings/PayoutDetailScreen';
 
 import MainTabs from './MainTabs';
 import AlertsScreen from '@/screens/tabs/AlertsScreen';
@@ -73,6 +76,9 @@ export default function RootNavigator() {
 
                 <Stack.Screen name="Home" component={MainTabs} />
                 <Stack.Screen name="Alerts" component={AlertsScreen} />
+                <Stack.Screen name="PayoutHistory" component={PayoutHistoryScreen} />
+                <Stack.Screen name="EarningsActivity" component={EarningsActivityScreen} />
+                <Stack.Screen name="PayoutDetail" component={PayoutDetailScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

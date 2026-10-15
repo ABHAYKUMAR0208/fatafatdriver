@@ -35,6 +35,9 @@ export type RootStackParamList = {
   DriverVerificationRejected: undefined;
   Home: NavigatorScreenParams<MainTabParamList> | undefined;
   Alerts: undefined;
+  PayoutHistory: undefined;
+  EarningsActivity: undefined;
+  PayoutDetail: {payoutId?: string} | undefined;
 };
 
 export type MainTabParamList = {
