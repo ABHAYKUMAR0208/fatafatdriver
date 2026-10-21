@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Pressable, StatusBar, StyleSheet, Text, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute, type RouteProp} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Svg, {Path} from 'react-native-svg';
@@ -11,7 +11,7 @@ import {colors} from '@/constants/colors';
 import {MDI_HOME} from '@/constants/iconPathsHome';
 import {fonts} from '@/constants/typography';
 import {useStrings} from '@/localization';
-import type {RootStackParamList} from '@/navigation/types';
+import type {MainTabParamList, RootStackParamList} from '@/navigation/types';
 import {useProfilePhoto} from '@/state/profilePhotoStore';
 import {isWithinServiceHours} from '@/utils/serviceHours';
 import ServiceHoursLockedScreen from './ServiceHoursLockedScreen';
@@ -39,7 +39,9 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const strings = useStrings();
   const photoUri = useProfilePhoto();
-  const [online, setOnline] = useState(false);
+  const route = useRoute<RouteProp<MainTabParamList, 'HomeTab'>>();
+  // after a trip the driver can come back already online
+  const [online, setOnline] = useState(route.params?.online ?? false);
   const [open, setOpen] = useState(isWithinServiceHours());
 
   // re-check the service hours every minute

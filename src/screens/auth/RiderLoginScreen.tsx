@@ -11,6 +11,7 @@ import {
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import BrandLogo from '@/components/common/BrandLogo';
+import CountryPickerModal from '@/components/common/CountryPickerModal';
 import {
   ArrowRightIcon,
   ChevronDownIcon,
@@ -18,36 +19,67 @@ import {
 } from '@/components/common/Icons';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import {colors} from '@/constants/colors';
+import {COUNTRIES, type Country} from '@/constants/countries';
 import {fonts} from '@/constants/typography';
 import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RiderLogin'>;
 
-const PHONE_LENGTH = 10;
+const DEFAULT_COUNTRY = COUNTRIES.find(c => c.iso === 'IN') ?? COUNTRIES[0];
 
-function formatPhone(digits: string) {
-  return digits.length > 5 ? `${digits.slice(0, 5)} ${digits.slice(5)}` : digits;
+// Groups the digits the way the country writes them, e.g. [5, 5] -> "98765 43210".
+function formatPhone(digits: string, groups: number[]) {
+  const parts: string[] = [];
+  let start = 0;
+  for (const size of groups) {
+    if (start >= digits.length) {
+      break;
+    }
+    parts.push(digits.slice(start, start + size));
+    start += size;
+  }
+  if (start < digits.length) {
+    parts.push(digits.slice(start));
+  }
+  return parts.join(' ');
+}
+
+// Placeholder in the same grouping, e.g. "00000 00000".
+function placeholderFor(country: Country) {
+  return formatPhone('0'.repeat(country.phoneLength), country.groups);
 }
 
 export default function RiderLoginScreen({navigation}: Props) {
   const strings = useStrings();
   const insets = useSafeAreaInsets();
   const [digits, setDigits] = useState('');
+  const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [focused, setFocused] = useState(false);
   const [error, setError] = useState(false);
 
   const onChangeText = (text: string) => {
-    setDigits(text.replace(/\D/g, '').slice(0, PHONE_LENGTH));
+    setDigits(text.replace(/\D/g, '').slice(0, country.phoneLength));
     setError(false);
   };
 
   const onContinue = () => {
-    if (digits.length !== PHONE_LENGTH) {
+    if (digits.length !== country.phoneLength) {
       setError(true);
       return;
     }
-    navigation.navigate('OtpVerification', {phone: formatPhone(digits)});
+    navigation.navigate('OtpVerification', {
+      phone: `${country.dialCode} ${formatPhone(digits, country.groups)}`,
+    });
+  };
+
+  const onSelectCountry = (next: Country) => {
+    setCountry(next);
+    // keep what was typed, trimmed to the new country's length
+    setDigits(d => d.slice(0, next.phoneLength));
+    setError(false);
+    setPickerOpen(false);
   };
 
   return (
@@ -75,25 +107,30 @@ export default function RiderLoginScreen({navigation}: Props) {
             focused && styles.inputRowFocused,
             error && styles.inputRowError,
           ]}>
-          <View style={styles.countryBox}>
-            <Text style={styles.flag}>🇮🇳</Text>
-            <Text style={styles.code}>+91</Text>
+          <Pressable
+            style={({pressed}) => [styles.countryBox, pressed && styles.countryPressed]}
+            onPress={() => setPickerOpen(true)}
+            hitSlop={4}>
+            <Text style={styles.flag}>{country.flag}</Text>
+            <Text style={styles.code}>{country.dialCode}</Text>
             <ChevronDownIcon size={12} color={colors.textMuted} />
-          </View>
+          </Pressable>
           <TextInput
             style={styles.input}
-            value={formatPhone(digits)}
+            value={formatPhone(digits, country.groups)}
             onChangeText={onChangeText}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            placeholder="00000 00000"
+            placeholder={placeholderFor(country)}
             placeholderTextColor="#C9CCD3"
             keyboardType="number-pad"
-            maxLength={PHONE_LENGTH + 1}
+            maxLength={country.phoneLength + country.groups.length}
           />
         </View>
         {error ? (
-          <Text style={styles.error}>{strings.login.invalidNumber}</Text>
+          <Text style={styles.error}>
+            {strings.formatString(strings.login.invalidNumber, String(country.phoneLength))}
+          </Text>
         ) : null}
 
         <View style={styles.spacer} />
@@ -125,6 +162,13 @@ export default function RiderLoginScreen({navigation}: Props) {
           </Pressable>
         </View>
       </View>
+
+      <CountryPickerModal
+        visible={pickerOpen}
+        selected={country}
+        onSelect={onSelectCountry}
+        onClose={() => setPickerOpen(false)}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -183,6 +227,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceAlt,
     borderRightWidth: 1,
     borderRightColor: colors.border,
+  },
+  countryPressed: {
+    opacity: 0.7,
   },
   flag: {
     fontSize: 14,

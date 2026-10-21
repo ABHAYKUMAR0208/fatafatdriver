@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {Pressable, StatusBar, StyleSheet, Text, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Avatar from '@/components/home/Avatar';
@@ -11,10 +11,17 @@ import {fonts} from '@/constants/typography';
 import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 import {useDisplayProfile} from '@/state/displayProfile';
+import {nextDemoRequestKind, receiveCarpool, receiveDelivery} from '@/state/deliveryStore';
+import {receiveTripRequest} from '@/state/tripStore';
 
 // TODO: load these from your API
 const BONUS = {done: 3, total: 5, reward: '₹200'};
 const TODAY = {earnings: '₹1,240', trips: '5'};
+
+// Demo only: a sample request arrives this long after going online, taking turns
+// between a ride, a parcel delivery and a carpool.
+// TODO: remove and open the right request screen when your API pushes a real one.
+const SAMPLE_REQUEST_DELAY_MS = 6000;
 
 type Props = {
   photoUri?: string;
@@ -27,6 +34,26 @@ export default function OnlineHomeScreen({photoUri, onGoOffline}: Props) {
   const insets = useSafeAreaInsets();
   const strings = useStrings();
   const {role, name} = useDisplayProfile();
+
+  // only while this screen is visible, so a request never opens over another screen
+  useFocusEffect(
+    useCallback(() => {
+      const id = setTimeout(() => {
+        const kind = nextDemoRequestKind();
+        if (kind === 'delivery') {
+          receiveDelivery();
+          navigation.navigate('DeliveryRequest');
+        } else if (kind === 'carpool') {
+          receiveCarpool();
+          navigation.navigate('CarpoolRequest');
+        } else {
+          receiveTripRequest();
+          navigation.navigate('IncomingTrip');
+        }
+      }, SAMPLE_REQUEST_DELAY_MS);
+      return () => clearTimeout(id);
+    }, [navigation]),
+  );
 
   const remaining = Math.max(BONUS.total - BONUS.done, 0);
   const progress = BONUS.total > 0 ? BONUS.done / BONUS.total : 0;

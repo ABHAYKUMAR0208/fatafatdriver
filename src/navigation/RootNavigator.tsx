@@ -32,6 +32,27 @@ import DriverVerificationRejectedScreen from '@/screens/driver/DriverVerificatio
 import PayoutHistoryScreen from '@/screens/earnings/PayoutHistoryScreen';
 import EarningsActivityScreen from '@/screens/earnings/EarningsActivityScreen';
 import PayoutDetailScreen from '@/screens/earnings/PayoutDetailScreen';
+import WeeklyPlanScreen from '@/screens/earnings/WeeklyPlanScreen';
+import IncomingTripScreen from '@/screens/trip/IncomingTripScreen';
+import TripAcceptedScreen from '@/screens/trip/TripAcceptedScreen';
+import EnRoutePickupScreen from '@/screens/trip/EnRoutePickupScreen';
+import ArrivedWaitingScreen from '@/screens/trip/ArrivedWaitingScreen';
+import HelmetCheckScreen from '@/screens/trip/HelmetCheckScreen';
+import RiderIdentityCheckScreen from '@/screens/trip/RiderIdentityCheckScreen';
+import ActiveTripScreen from '@/screens/trip/ActiveTripScreen';
+import CancelTripScreen from '@/screens/trip/CancelTripScreen';
+import TripCompleteScreen from '@/screens/trip/TripCompleteScreen';
+import DeliveryRequestScreen from '@/screens/delivery/DeliveryRequestScreen';
+import ParcelPickupScreen from '@/screens/delivery/ParcelPickupScreen';
+import ParcelInTransitScreen from '@/screens/delivery/ParcelInTransitScreen';
+import DropVerificationScreen from '@/screens/delivery/DropVerificationScreen';
+import SequentialDropoffsScreen from '@/screens/delivery/SequentialDropoffsScreen';
+import CarpoolRequestScreen from '@/screens/delivery/CarpoolRequestScreen';
+import MultiStopManifestScreen from '@/screens/delivery/MultiStopManifestScreen';
+import CancelStopScreen from '@/screens/delivery/CancelStopScreen';
+import FareMatchScreen from '@/screens/delivery/FareMatchScreen';
+import RequestExpiredScreen from '@/screens/delivery/RequestExpiredScreen';
+
 
 import MainTabs from './MainTabs';
 import AlertsScreen from '@/screens/tabs/AlertsScreen';
@@ -79,6 +100,64 @@ export default function RootNavigator() {
                 <Stack.Screen name="PayoutHistory" component={PayoutHistoryScreen} />
                 <Stack.Screen name="EarningsActivity" component={EarningsActivityScreen} />
                 <Stack.Screen name="PayoutDetail" component={PayoutDetailScreen} />
+                <Stack.Screen name="WeeklyPlan" component={WeeklyPlanScreen} />
+
+                <Stack.Screen
+                    name="IncomingTrip"
+                    component={IncomingTripScreen}
+                    options={{ gestureEnabled: false }}
+                />
+                <Stack.Screen name="TripAccepted" component={TripAcceptedScreen} />
+                <Stack.Screen name="EnRoutePickup" component={EnRoutePickupScreen} />
+                <Stack.Screen name="ArrivedWaiting" component={ArrivedWaitingScreen} />
+                <Stack.Screen name="HelmetCheck" component={HelmetCheckScreen} />
+                <Stack.Screen name="RiderIdentityCheck" component={RiderIdentityCheckScreen} />
+                <Stack.Screen
+                    name="ActiveTrip"
+                    component={ActiveTripScreen}
+                    options={{ gestureEnabled: false }}
+                />
+                <Stack.Screen
+                    name="CancelTrip"
+                    component={CancelTripScreen}
+                    options={{ presentation: 'transparentModal', animation: 'slide_from_bottom' }}
+                />
+                <Stack.Screen
+                    name="TripComplete"
+                    component={TripCompleteScreen}
+                    options={{ gestureEnabled: false }}
+                />
+
+                <Stack.Screen
+                    name="DeliveryRequest"
+                    component={DeliveryRequestScreen}
+                    options={{ gestureEnabled: false }}
+                />
+                <Stack.Screen name="ParcelPickup" component={ParcelPickupScreen} />
+                <Stack.Screen name="ParcelInTransit" component={ParcelInTransitScreen} />
+                <Stack.Screen name="DropVerification" component={DropVerificationScreen} />
+                <Stack.Screen
+                    name="SequentialDropoffs"
+                    component={SequentialDropoffsScreen}
+                    options={{ gestureEnabled: false }}
+                />
+                <Stack.Screen
+                    name="CarpoolRequest"
+                    component={CarpoolRequestScreen}
+                    options={{ gestureEnabled: false }}
+                />
+                <Stack.Screen name="MultiStopManifest" component={MultiStopManifestScreen} />
+                <Stack.Screen
+                    name="CancelStop"
+                    component={CancelStopScreen}
+                    options={{ animation: 'slide_from_bottom' }}
+                />
+                <Stack.Screen
+                    name="FareMatch"
+                    component={FareMatchScreen}
+                    options={{ animation: 'slide_from_bottom' }}
+                />
+                <Stack.Screen name="RequestExpired" component={RequestExpiredScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

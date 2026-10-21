@@ -38,10 +38,31 @@ export type RootStackParamList = {
   PayoutHistory: undefined;
   EarningsActivity: undefined;
   PayoutDetail: {payoutId?: string} | undefined;
+  WeeklyPlan: undefined;
+  IncomingTrip: undefined;
+  TripAccepted: undefined;
+  EnRoutePickup: undefined;
+  ArrivedWaiting: undefined;
+  HelmetCheck: undefined;
+  RiderIdentityCheck: undefined;
+  ActiveTrip: undefined;
+  CancelTrip: undefined;
+  TripComplete: undefined;
+  DeliveryRequest: undefined;
+  ParcelPickup: undefined;
+  ParcelInTransit: undefined;
+  DropVerification: undefined;
+  SequentialDropoffs: undefined;
+  CarpoolRequest: undefined;
+  MultiStopManifest: undefined;
+  CancelStop: {passengerId: string};
+  FareMatch: undefined;
+  RequestExpired: undefined;
 };
 
 export type MainTabParamList = {
-  HomeTab: undefined;
+  // online = open Home already online (e.g. after "Submit & Go Online")
+  HomeTab: {online?: boolean} | undefined;
   Trips: undefined;
   Earnings: undefined;
   Profile: undefined;

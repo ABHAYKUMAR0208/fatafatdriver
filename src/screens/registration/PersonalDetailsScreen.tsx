@@ -1,13 +1,25 @@
 import React, {useState} from 'react';
-import {Alert, Image, Pressable, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {
+  Alert,
+  Image,
+  PermissionsAndroid,
+  Platform,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Svg, {Circle} from 'react-native-svg';
-import {launchImageLibrary} from 'react-native-image-picker';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {ArrowRightIcon} from '@/components/common/Icons';
 import MdiIcon from '@/components/common/MdiIcon';
+import PhotoSourceSheet from '@/components/common/PhotoSourceSheet';
 import PrimaryButton from '@/components/common/PrimaryButton';
 import BottomBar from '@/components/registration/BottomBar';
+import DateField from '@/components/registration/DateField';
 import {SelectField, TextField} from '@/components/registration/FormFields';
 import {SegmentedProgress} from '@/components/registration/Progress';
 import SectionHeading from '@/components/registration/SectionHeading';
@@ -25,16 +37,20 @@ type Props = NativeStackScreenProps<RootStackParamList, 'PersonalDetails'>;
 
 const RING = 88;
 
-// digits -> "mm / dd / yyyy"
-function formatDob(digits: string) {
-  let out = digits.slice(0, 2);
-  if (digits.length > 2) {
-    out += ` / ${digits.slice(2, 4)}`;
+// Riders must be 18+; nobody born before 1940 expected.
+const THIS_YEAR = new Date().getFullYear();
+const DOB_MIN_YEAR = 1940;
+const DOB_MAX_YEAR = THIS_YEAR - 18;
+const DOB_START_YEAR = THIS_YEAR - 25;
+
+async function ensureCameraPermission() {
+  if (Platform.OS !== 'android') {
+    return true; // iOS asks by itself (needs NSCameraUsageDescription)
   }
-  if (digits.length > 4) {
-    out += ` / ${digits.slice(4, 8)}`;
-  }
-  return out;
+  const result = await PermissionsAndroid.request(
+    PermissionsAndroid.PERMISSIONS.CAMERA,
+  );
+  return result === PermissionsAndroid.RESULTS.GRANTED;
 }
 
 export default function PersonalDetailsScreen({navigation, route}: Props) {
@@ -46,8 +62,26 @@ export default function PersonalDetailsScreen({navigation, route}: Props) {
   const [phone, setPhone] = useState(saved.phone); // 10 digits only
   const [dobDigits, setDobDigits] = useState(saved.dobDigits);
   const [gender, setGender] = useState<Gender | undefined>(saved.gender);
+  const [photoSheet, setPhotoSheet] = useState(false);
 
-  const onChoosePhoto = async () => {
+  const onTakePhoto = async () => {
+    if (!(await ensureCameraPermission())) {
+      Alert.alert(strings.personalDetails.uploadPhoto, strings.personalDetails.cameraDenied);
+      return;
+    }
+    // front camera: it's a selfie for the profile
+    const result = await launchCamera({
+      mediaType: 'photo',
+      cameraType: 'front',
+      quality: 0.8,
+    });
+    const uri = result.assets?.[0]?.uri;
+    if (uri) {
+      setPhotoUri(uri);
+    }
+  };
+
+  const onPickFromGallery = async () => {
     const result = await launchImageLibrary({
       mediaType: 'photo',
       selectionLimit: 1,
@@ -58,6 +92,8 @@ export default function PersonalDetailsScreen({navigation, route}: Props) {
       setPhotoUri(uri);
     }
   };
+
+  const onChoosePhoto = () => setPhotoSheet(true);
 
   const onSave = () => {
     if (phone.length !== 10) {
@@ -99,7 +135,7 @@ export default function PersonalDetailsScreen({navigation, route}: Props) {
           <SegmentedProgress step={1} />
         </View>
 
-        <View style={styles.uploadCard}>
+        <Pressable style={styles.uploadCard} onPress={onChoosePhoto}>
           <View style={styles.ring}>
             <Svg width={RING} height={RING} style={StyleSheet.absoluteFill}>
               <Circle
@@ -129,7 +165,7 @@ export default function PersonalDetailsScreen({navigation, route}: Props) {
           <Pressable style={styles.chooseBtn} onPress={onChoosePhoto}>
             <Text style={styles.chooseText}>{strings.personalDetails.choosePhoto}</Text>
           </Pressable>
-        </View>
+        </Pressable>
 
         <View style={styles.section}>
           <SectionHeading title={strings.personalDetails.identity} />
@@ -160,16 +196,15 @@ export default function PersonalDetailsScreen({navigation, route}: Props) {
           maxLength={10}
         />
         <View style={styles.twoCols}>
-          <TextField
+          <DateField
             containerStyle={styles.col}
             label={strings.personalDetails.dateOfBirth}
-            placeholder="mm / dd / yyyy"
-            value={formatDob(dobDigits)}
-            onChangeText={text =>
-              setDobDigits(text.replace(/\D/g, '').slice(0, 8))
-            }
-            keyboardType="number-pad"
-            maxLength={14}
+            placeholder={strings.personalDetails.selectDate}
+            value={dobDigits}
+            onChange={setDobDigits}
+            minYear={DOB_MIN_YEAR}
+            maxYear={DOB_MAX_YEAR}
+            defaultYear={DOB_START_YEAR}
           />
           <SelectField
             containerStyle={styles.col}
@@ -181,6 +216,14 @@ export default function PersonalDetailsScreen({navigation, route}: Props) {
           />
         </View>
       </KeyboardAwareScrollView>
+
+      <PhotoSourceSheet
+        visible={photoSheet}
+        title={strings.personalDetails.photoSource}
+        onCamera={onTakePhoto}
+        onGallery={onPickFromGallery}
+        onClose={() => setPhotoSheet(false)}
+      />
 
       <BottomBar>
         <PrimaryButton
