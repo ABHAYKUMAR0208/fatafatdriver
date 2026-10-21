@@ -5,7 +5,6 @@ import type {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import {colors} from '@/constants/colors';
 import {fonts} from '@/constants/typography';
 import {useStrings} from '@/localization';
-import {isWithinServiceHours} from '@/utils/serviceHours';
 import {
   BellIcon,
   CarIcon,
@@ -117,16 +116,8 @@ export default function MainTabBar({state, navigation}: BottomTabBarProps) {
     }
   };
 
-  // the Locked screen uses a different icon set in the design
-  // (and the Earnings screen has its own icon set too)
-  const items =
-    activeKey === 'Earnings'
-      ? EARNINGS_TAB_ITEMS
-      : isWithinServiceHours()
-      ? HOME_TAB_ITEMS
-      : LOCKED_TAB_ITEMS;
-
-  return <TabBarView items={items} activeKey={activeKey} onPress={onPress} />;
+   // (Home, Trips, Earnings, Profile)
+  return <TabBarView items={HOME_TAB_ITEMS} activeKey={activeKey} onPress={onPress} />;
 }
 
 const styles = StyleSheet.create({

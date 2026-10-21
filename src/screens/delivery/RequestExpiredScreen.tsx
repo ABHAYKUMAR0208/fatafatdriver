@@ -1,9 +1,8 @@
 import React from 'react';
-import {StatusBar, StyleSheet, Text, View} from 'react-native';
+import {Image, StatusBar, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {ClockIcon} from '@/components/common/Icons';
 import SheetTitleBar from '@/components/delivery/SheetTitleBar';
 import TripButton from '@/components/trip/TripButton';
 import {colors} from '@/constants/colors';
@@ -25,12 +24,11 @@ export default function RequestExpiredScreen() {
 
       <View style={styles.content}>
         <View style={styles.illustration}>
-          <View style={styles.ghost}>
-            <ClockIcon size={66} color={colors.border} />
-          </View>
-          <View style={styles.circle}>
-            <ClockIcon size={56} color={colors.star} />
-          </View>
+          <Image
+            source={require('../../assets/images/expired_card.png')}
+            style={styles.card}
+            resizeMode="contain"
+          />
         </View>
 
         <Text style={styles.title}>{strings.delivery.expiredTitle}</Text>
@@ -64,23 +62,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ghost: {
-    position: 'absolute',
-    left: '18%',
-    top: 74,
-  },
-  circle: {
-    width: 128,
-    height: 128,
-    borderRadius: 64,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.amberSoft,
-    elevation: 4,
-    shadowColor: '#000000',
-    shadowOffset: {width: 0, height: 8},
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
+  card: {
+    width: 260,
+    height: 220,
   },
   title: {
     marginTop: 24,
@@ -94,6 +78,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
     fontSize: 15,
     lineHeight: 22,
+    textAlign: 'center',
+    paddingHorizontal: 10,
     color: colors.textSecondary,
   },
   bottom: {
