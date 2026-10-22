@@ -158,7 +158,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Document status */}
-        <View style={styles.docs}>
+          <View style={styles.docs}>
           <View style={[styles.card, styles.docCard]}>
             <View style={styles.docTop}>
               <CarIcon />
@@ -169,7 +169,9 @@ export default function ProfileScreen() {
               <Text style={styles.docSub}>{profileStrings.verified}</Text>
             </View>
           </View>
-          <View style={[styles.card, styles.docCard]}>
+          <Pressable
+            style={[styles.card, styles.docCard]}
+            onPress={() => (navigation as any).navigate('DocumentDetail', {docKey: 'licence'})}>
             <View style={styles.docTop}>
               <IdCardIcon />
               <GreenTick />
@@ -180,7 +182,7 @@ export default function ProfileScreen() {
                 {strings.formatString(profileStrings.validTill, PROFILE.licenceYear)}
               </Text>
             </View>
-          </View>
+          </Pressable>
         </View>
 
         {/* Menu */}

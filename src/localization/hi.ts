@@ -358,6 +358,25 @@ export const hi: typeof en = {
   },
 
 
+    documentDetail: {
+    licenceTitle: 'ड्राइविंग लाइसेंस',
+    approved: 'स्वीकृत',
+    underReview: 'समीक्षा में',
+    rejected: 'अस्वीकृत',
+    previewMasked: 'पूर्वावलोकन छिपा हुआ है',
+    details: 'विवरण',
+    documentNumber: 'डॉक्यूमेंट नंबर',
+    issuedState: 'जारी करने वाला राज्य',
+    expirationDate: 'समाप्ति तिथि',
+    status: 'स्थिति',
+    valid: 'मान्य',
+    expired: 'समाप्त',
+    notice: 'आपका ड्राइविंग लाइसेंस अभी मान्य और स्वीकृत है।',
+    update: 'डॉक्यूमेंट अपडेट करें',
+    updateNote: 'डॉक्यूमेंट अपडेट करने पर आपका अकाउंट कुछ समय के लिए समीक्षा में रहेगा।',
+  },
+
+
   tabs: {
     HomeTab: 'होम',
     Trips: 'ट्रिप',

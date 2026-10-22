@@ -514,6 +514,24 @@ export const en = {
     referBonus: 'Earn ₹{0}',
     signOut: 'Sign Out',
   },
+
+    documentDetail: {
+    licenceTitle: "Driver's License",
+    approved: 'Approved',
+    underReview: 'Under Review',
+    rejected: 'Rejected',
+    previewMasked: 'PREVIEW MASKED',
+    details: 'Details',
+    documentNumber: 'Document Number',
+    issuedState: 'Issued State',
+    expirationDate: 'Expiration Date',
+    status: 'Status',
+    valid: 'Valid',
+    expired: 'Expired',
+    notice: "Your Driver's License is currently valid and approved.",
+    update: 'Update Document',
+    updateNote: 'Updating your document will place your account under review temporarily.',
+  },
   
   tabs: {
     HomeTab: 'Home',

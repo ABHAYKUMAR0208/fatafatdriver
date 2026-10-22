@@ -53,6 +53,7 @@ import MultiStopManifestScreen from '@/screens/delivery/MultiStopManifestScreen'
 import CancelStopScreen from '@/screens/delivery/CancelStopScreen';
 import FareMatchScreen from '@/screens/delivery/FareMatchScreen';
 import RequestExpiredScreen from '@/screens/delivery/RequestExpiredScreen';
+import DocumentDetailScreen from '@/screens/profile/DocumentDetailScreen';
 
 
 import MainTabs from './MainTabs';
@@ -96,6 +97,7 @@ export default function RootNavigator() {
                 <Stack.Screen name="DriverReview" component={DriverReviewScreen} />
                 <Stack.Screen name="DriverVerificationPending" component={DriverVerificationPendingScreen} />
                 <Stack.Screen name="DriverVerificationRejected" component={DriverVerificationRejectedScreen} />
+                <Stack.Screen name="DocumentDetail" component={DocumentDetailScreen} />
 
                 <Stack.Screen name="Home" component={MainTabs} />
                 <Stack.Screen name="Alerts" component={AlertsScreen} />

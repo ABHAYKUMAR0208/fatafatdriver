@@ -2,6 +2,7 @@ import type { VehicleId } from '@/constants/vehicles';
 import type { DocId } from '@/constants/documents';
 import type { DriverDocId } from '@/constants/driverDocuments';
 import type { NavigatorScreenParams } from '@react-navigation/native';
+import type { DocumentKey } from '@/state/documentDetailStore';
 
 
 // Screens Fare Match can continue to once the driver answers it.
@@ -60,6 +61,7 @@ export type RootStackParamList = {
   CarpoolRequest: undefined;
   MultiStopManifest: undefined;
   CancelStop: { passengerId: string };
+    DocumentDetail: { docKey: DocumentKey };
   // next = the screen to open after Fare Match (the OTP / start step of the flow)
   FareMatch: { next?: FareMatchNext } | undefined;
   RequestExpired: undefined;
