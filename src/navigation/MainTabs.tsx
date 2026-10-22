@@ -4,12 +4,12 @@ import MainTabBar from '@/components/home/TabBar';
 import EarningsScreen from '@/screens/tabs/EarningsScreen';
 import HomeScreen from '@/screens/tabs/HomeScreen';
 import PlaceholderTabScreen from '@/screens/tabs/PlaceholderTabScreen';
+import ProfileScreen from '@/screens/tabs/ProfileScreen';
 import type {MainTabParamList} from './types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const TripsScreen = () => <PlaceholderTabScreen name="Trips" />;
-const ProfileScreen = () => <PlaceholderTabScreen name="Profile" />;
 
 export default function MainTabs() {
   return (

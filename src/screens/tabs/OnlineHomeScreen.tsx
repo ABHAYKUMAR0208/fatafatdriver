@@ -11,15 +11,16 @@ import {fonts} from '@/constants/typography';
 import {useStrings} from '@/localization';
 import type {RootStackParamList} from '@/navigation/types';
 import {useDisplayProfile} from '@/state/displayProfile';
-import {nextDemoRequestKind, receiveCarpool, receiveDelivery} from '@/state/deliveryStore';
+import {receiveCarpool, receiveDelivery, requestKindForVehicle} from '@/state/deliveryStore';
+import {useRiderProfile} from '@/state/riderProfileStore';
 import {receiveTripRequest} from '@/state/tripStore';
 
 // TODO: load these from your API
 const BONUS = {done: 3, total: 5, reward: '₹200'};
 const TODAY = {earnings: '₹1,240', trips: '5'};
 
-// Demo only: a sample request arrives this long after going online, taking turns
-// between a ride, a parcel delivery and a carpool.
+// Demo only: a sample request arrives this long after going online. Its kind
+// follows the driver's vehicle (cab -> ride, parcel -> delivery, carpool -> carpool).
 // TODO: remove and open the right request screen when your API pushes a real one.
 const SAMPLE_REQUEST_DELAY_MS = 6000;
 
@@ -34,12 +35,13 @@ export default function OnlineHomeScreen({photoUri, onGoOffline}: Props) {
   const insets = useSafeAreaInsets();
   const strings = useStrings();
   const {role, name} = useDisplayProfile();
+  const {vehicle} = useRiderProfile();
 
   // only while this screen is visible, so a request never opens over another screen
   useFocusEffect(
     useCallback(() => {
       const id = setTimeout(() => {
-        const kind = nextDemoRequestKind();
+        const kind = requestKindForVehicle(vehicle);
         if (kind === 'delivery') {
           receiveDelivery();
           navigation.navigate('DeliveryRequest');
@@ -52,7 +54,7 @@ export default function OnlineHomeScreen({photoUri, onGoOffline}: Props) {
         }
       }, SAMPLE_REQUEST_DELAY_MS);
       return () => clearTimeout(id);
-    }, [navigation]),
+    }, [navigation, vehicle]),
   );
 
   const remaining = Math.max(BONUS.total - BONUS.done, 0);

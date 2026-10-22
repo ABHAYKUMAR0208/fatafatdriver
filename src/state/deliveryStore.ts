@@ -1,4 +1,5 @@
 import {useSyncExternalStore} from 'react';
+import type {VehicleId} from '@/constants/vehicles';
 
 // ---------- Parcel delivery ----------
 
@@ -225,12 +226,16 @@ export function removePassenger(id: string) {
 // ---------- which kind of request arrives next (demo only) ----------
 
 export type RequestKind = 'ride' | 'delivery' | 'carpool';
-const ROTATION: RequestKind[] = ['ride', 'delivery', 'carpool'];
-let requestCount = 0;
 
+// A driver only receives requests for the service they signed up for:
+// parcel -> parcel delivery, carpool -> carpool, cab / auto / bike / scooty -> rides.
 // TODO: remove; your API decides what kind of request arrives.
-export function nextDemoRequestKind(): RequestKind {
-  const kind = ROTATION[requestCount % ROTATION.length];
-  requestCount += 1;
-  return kind;
+export function requestKindForVehicle(vehicle?: VehicleId): RequestKind {
+  if (vehicle === 'parcel') {
+    return 'delivery';
+  }
+  if (vehicle === 'carpool') {
+    return 'carpool';
+  }
+  return 'ride';
 }

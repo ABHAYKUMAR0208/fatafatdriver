@@ -130,7 +130,7 @@ export default function ArrivedWaitingScreen() {
           <TripButton
             title={strings.trip.startTrip}
             disabled={!canStart}
-            onPress={() => navigation.navigate(nextStartStep(trip, 'arrived'))}
+            onPress={() => navigation.navigate('FareMatch', {next: nextStartStep(trip, 'arrived')})}
           />
         </ScrollView>
       </TripSheet>

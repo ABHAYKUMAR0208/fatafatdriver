@@ -1,34 +1,34 @@
 import React from 'react';
-import {Pressable, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
-import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import { Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import MdiIcon from '@/components/common/MdiIcon';
 import ActionButton from '@/components/registration/ActionButton';
 import BottomBar from '@/components/registration/BottomBar';
 import DriverTitleBar from '@/components/driver/DriverTitleBar';
-import {colors} from '@/constants/colors';
-import {MDI_DOCS} from '@/constants/iconPathsDocs';
-import {fonts} from '@/constants/typography';
-import {useStrings} from '@/localization';
-import type {RootStackParamList} from '@/navigation/types';
+import { colors } from '@/constants/colors';
+import { MDI_DOCS } from '@/constants/iconPathsDocs';
+import { fonts } from '@/constants/typography';
+import { useStrings } from '@/localization';
+import type { RootStackParamList } from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DriverPayout'>;
 
 // Soft coloured glow in the top-right corner of each card
-function Glow({color}: {color: string}) {
+function Glow({ color }: { color: string }) {
   return (
     <>
-      <View style={[styles.glow, styles.glowBig, {backgroundColor: color}]} />
-      <View style={[styles.glow, styles.glowMid, {backgroundColor: color}]} />
-      <View style={[styles.glow, styles.glowSmall, {backgroundColor: color}]} />
+      <View style={[styles.glow, styles.glowBig, { backgroundColor: color }]} />
+      <View style={[styles.glow, styles.glowMid, { backgroundColor: color }]} />
+      <View style={[styles.glow, styles.glowSmall, { backgroundColor: color }]} />
     </>
   );
 }
 
-export default function DriverPayoutScreen({navigation}: Props) {
+export default function DriverPayoutScreen({ navigation }: Props) {
   const strings = useStrings();
   const onAddBank = () => {
     // TODO: open the bank account form (not designed yet)
-    navigation.navigate('DriverReview');
+    navigation.navigate('BankDetails', { next: 'DriverReview' });
   };
 
   return (

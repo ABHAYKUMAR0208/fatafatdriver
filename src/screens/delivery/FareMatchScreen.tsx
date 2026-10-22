@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {Image, Pressable, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import type {RouteProp} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {CheckIcon, UploadIcon} from '@/components/common/Icons';
@@ -18,10 +19,21 @@ import {formatRupees} from '@/utils/formatCurrency';
 export default function FareMatchScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const insets = useSafeAreaInsets();
+  const route = useRoute<RouteProp<RootStackParamList, 'FareMatch'>>();
+  const next = route.params?.next;
   const strings = useStrings();
   const match = useFareMatch();
   const [evidence, setEvidence] = useState<string | undefined>();
   const discount = match.originalFare - match.offer;
+
+  // Inside a flow, continue to its OTP / start step; opened on its own, just close.
+  const onContinue = () => {
+    if (next) {
+      navigation.replace(next);
+    } else {
+      navigation.goBack();
+    }
+  };
 
   const onUpload = async () => {
     const uri = await pickImage();
@@ -91,8 +103,8 @@ export default function FareMatchScreen() {
           primary={strings.delivery.acceptFare}
           primaryDisabled={!evidence}
           // TODO: send the decision (and the screenshot) to your API
-          onSecondary={() => navigation.goBack()}
-          onPrimary={() => navigation.goBack()}
+          onSecondary={onContinue}
+          onPrimary={onContinue}
         />
       </View>
     </View>

@@ -84,8 +84,8 @@ export default function MultiStopManifestScreen() {
           {allBoarded ? (
             <TripButton
               title={strings.delivery.startRide}
-              // everyone is on board: continue with the Module 6 active trip screen
-              onPress={() => navigation.replace('ActiveTrip')}
+              // everyone is on board: Fare Match first, then the Module 6 active trip screen
+              onPress={() => navigation.replace('FareMatch', {next: 'ActiveTrip'})}
             />
           ) : null}
         </ScrollView>

@@ -1,19 +1,19 @@
 import React from 'react';
-import {Image, Pressable, ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {ArrowRightIcon} from '@/components/common/Icons';
+import { Image, Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { ArrowRightIcon } from '@/components/common/Icons';
 import MdiIcon from '@/components/common/MdiIcon';
 import ActionButton from '@/components/registration/ActionButton';
-import {colors} from '@/constants/colors';
-import {MDI_DOCS} from '@/constants/iconPathsDocs';
-import {fonts} from '@/constants/typography';
-import {useStrings} from '@/localization';
-import type {RootStackParamList} from '@/navigation/types';
+import { colors } from '@/constants/colors';
+import { MDI_DOCS } from '@/constants/iconPathsDocs';
+import { fonts } from '@/constants/typography';
+import { useStrings } from '@/localization';
+import type { RootStackParamList } from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PayoutIntro'>;
 
-export default function PayoutIntroScreen({navigation}: Props) {
+export default function PayoutIntroScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const strings = useStrings();
 
@@ -40,7 +40,7 @@ export default function PayoutIntroScreen({navigation}: Props) {
 
   const onAddBank = () => {
     // TODO: open the bank account form (not designed yet)
-    navigation.navigate('ReviewSubmit');
+    navigation.navigate('BankDetails', { next: 'ReviewSubmit' });
   };
 
   const onLater = () => navigation.navigate('ReviewSubmit');
@@ -51,13 +51,13 @@ export default function PayoutIntroScreen({navigation}: Props) {
       <ScrollView
         contentContainerStyle={[
           styles.scroll,
-          {paddingTop: insets.top, paddingBottom: Math.max(insets.bottom, 16)},
+          { paddingTop: insets.top, paddingBottom: Math.max(insets.bottom, 16) },
         ]}
         showsVerticalScrollIndicator={false}>
         <View style={styles.card}>
           {/* payout_card.png must be in android drawable (see Step 7) */}
           <Image
-            source={{uri: 'payout_card'}}
+            source={{ uri: 'payout_card' }}
             style={styles.image}
             resizeMode="cover"
           />

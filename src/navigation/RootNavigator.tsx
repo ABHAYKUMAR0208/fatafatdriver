@@ -16,6 +16,7 @@ import VehicleDetailsScreen from '@/screens/registration/VehicleDetailsScreen';
 import DocumentChecklistScreen from '@/screens/registration/DocumentChecklistScreen';
 import UploadDocumentScreen from '@/screens/registration/UploadDocumentScreen';
 import PayoutIntroScreen from '@/screens/registration/PayoutIntroScreen';
+import BankDetailsScreen from '@/screens/registration/BankDetailsScreen';
 import ReviewSubmitScreen from '@/screens/registration/ReviewSubmitScreen';
 import VerificationPendingScreen from '@/screens/registration/VerificationPendingScreen';
 import VerificationRejectedScreen from '@/screens/registration/VerificationRejectedScreen';
@@ -81,6 +82,7 @@ export default function RootNavigator() {
                 <Stack.Screen name="DocumentChecklist" component={DocumentChecklistScreen} />
                 <Stack.Screen name="UploadDocument" component={UploadDocumentScreen} />
                 <Stack.Screen name="PayoutIntro" component={PayoutIntroScreen} />
+                <Stack.Screen name="BankDetails" component={BankDetailsScreen} />
                 <Stack.Screen name="ReviewSubmit" component={ReviewSubmitScreen} />
                 <Stack.Screen name="VerificationPending" component={VerificationPendingScreen} />
                 <Stack.Screen name="VerificationRejected" component={VerificationRejectedScreen} />

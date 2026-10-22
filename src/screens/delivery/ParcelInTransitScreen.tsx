@@ -84,7 +84,7 @@ export default function ParcelInTransitScreen() {
         <TripButton
           title={strings.delivery.arrivedAtStop}
           variant="grey"
-          onPress={() => navigation.navigate('DropVerification')}
+          onPress={() => navigation.navigate('FareMatch', {next: 'DropVerification'})}
         />
       </View>
     </View>

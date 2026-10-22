@@ -1,7 +1,7 @@
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {EARNINGS_TAB_ITEMS, TabBarView} from '@/components/home/TabBar';
+import {HOME_TAB_ITEMS, TabBarView} from '@/components/home/TabBar';
 import type {MainTabParamList, RootStackParamList} from '@/navigation/types';
 
 // Bottom tab bar for the screens that sit on top of the Earnings tab
@@ -13,5 +13,5 @@ export default function EarningsTabBar() {
     navigation.navigate('Home', {screen: key as keyof MainTabParamList});
   };
 
-  return <TabBarView items={EARNINGS_TAB_ITEMS} activeKey="Earnings" onPress={onPress} />;
+  return <TabBarView items={HOME_TAB_ITEMS} activeKey="Earnings" onPress={onPress} />;
 }
