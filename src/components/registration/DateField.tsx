@@ -1,4 +1,4 @@
-import React, {useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   Modal,
   NativeScrollEvent,
@@ -21,6 +21,8 @@ import {useStrings} from '@/localization';
 const ITEM_HEIGHT = 44;
 const VISIBLE_ROWS = 5; // odd, so one row sits in the middle
 const PAD = ITEM_HEIGHT * Math.floor(VISIBLE_ROWS / 2);
+// wait this long after a drag ends to see whether momentum scrolling follows
+const DRAG_SETTLE_MS = 150;
 
 type Props = {
   label: string;
@@ -32,8 +34,17 @@ type Props = {
   maxYear: number;
   // year the wheels start on when nothing is picked yet
   defaultYear: number;
+  // Earliest date that can be picked (expiry dates pass today). The wheels then
+  // only list valid days / months / years, so a past date cannot be chosen.
+  // Without it the field behaves as before (e.g. date of birth).
+  minDate?: Date;
+  labelColor?: string;
+  darkBorder?: boolean;
+  boxStyle?: StyleProp<ViewStyle>;
   containerStyle?: StyleProp<ViewStyle>;
 };
+
+type Draft = {day: number; month: number; year: number};
 
 function daysIn(month: number, year: number) {
   // month is 0-11; day 0 of the next month = last day of this one
@@ -44,7 +55,7 @@ function pad(n: number, size = 2) {
   return String(n).padStart(size, '0');
 }
 
-function parse(digits: string) {
+function parse(digits: string): Draft | undefined {
   if (digits.length !== 8) {
     return undefined;
   }
@@ -64,12 +75,25 @@ type WheelProps = {
 // One scrolling column that snaps to a row; the middle row is the value.
 function Wheel({items, index, onChange}: WheelProps) {
   const ref = useRef<React.ComponentRef<typeof ScrollView>>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const ready = useRef(false);
 
-  const settle = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const i = Math.round(e.nativeEvent.contentOffset.y / ITEM_HEIGHT);
-    const clamped = Math.min(Math.max(i, 0), items.length - 1);
-    if (clamped !== index) {
-      onChange(clamped);
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  const scrollToIndex = (i: number, animated: boolean) =>
+    ref.current?.scrollTo({y: i * ITEM_HEIGHT, animated});
+
+  // Keep the wheel on the chosen row when the value changes from outside
+  // (list got shorter, a tap, the sheet re-opened).
+  useEffect(() => {
+    scrollToIndex(index, ready.current);
+    ready.current = true;
+  }, [index, items.length]);
+
+  const settle = (y: number) => {
+    const i = Math.min(Math.max(Math.round(y / ITEM_HEIGHT), 0), items.length - 1);
+    if (i !== index) {
+      onChange(i);
     }
   };
 
@@ -82,22 +106,23 @@ function Wheel({items, index, onChange}: WheelProps) {
       snapToInterval={ITEM_HEIGHT}
       decelerationRate="fast"
       nestedScrollEnabled
-      onLayout={() => ref.current?.scrollTo({y: index * ITEM_HEIGHT, animated: false})}
-      onMomentumScrollEnd={settle}
+      // first layout: jump straight to the row, no animation
+      onContentSizeChange={() => scrollToIndex(index, false)}
+      onScrollBeginDrag={() => clearTimeout(timer.current)}
+      onMomentumScrollBegin={() => clearTimeout(timer.current)}
       onScrollEndDrag={e => {
-        // a slow drag ends without momentum
-        if (!e.nativeEvent.velocity || Math.abs(e.nativeEvent.velocity.y) < 0.05) {
-          settle(e);
-        }
+        // A drag can end with momentum scrolling still to come; only settle if
+        // no momentum starts shortly after (a slow drag).
+        const y = e.nativeEvent.contentOffset.y;
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => settle(y), DRAG_SETTLE_MS);
+      }}
+      onMomentumScrollEnd={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
+        clearTimeout(timer.current);
+        settle(e.nativeEvent.contentOffset.y);
       }}>
       {items.map((item, i) => (
-        <Pressable
-          key={item}
-          style={styles.wheelItem}
-          onPress={() => {
-            ref.current?.scrollTo({y: i * ITEM_HEIGHT, animated: true});
-            onChange(i);
-          }}>
+        <Pressable key={item} style={styles.wheelItem} onPress={() => onChange(i)}>
           <Text style={[styles.wheelText, i === index && styles.wheelTextOn]}>{item}</Text>
         </Pressable>
       ))}
@@ -114,54 +139,103 @@ export default function DateField({
   minYear,
   maxYear,
   defaultYear,
+  minDate,
+  labelColor,
+  darkBorder,
+  boxStyle,
   containerStyle,
 }: Props) {
   const strings = useStrings();
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
-  const [draft, setDraft] = useState({day: 1, month: 0, year: defaultYear});
+
+  // the earliest allowed day / month / year (only when minDate is set)
+  const min = minDate
+    ? {day: minDate.getDate(), month: minDate.getMonth(), year: minDate.getFullYear()}
+    : undefined;
+
+  const startDraft = (): Draft =>
+    min ? {...min} : {day: 1, month: 0, year: defaultYear};
+
+  const [draft, setDraft] = useState<Draft>(startDraft);
 
   const years = useMemo(() => {
     const list: number[] = [];
-    for (let y = maxYear; y >= minYear; y--) {
-      list.push(y);
+    if (min) {
+      for (let y = min.year; y <= maxYear; y++) {
+        list.push(y); // nearest year first, so "today" is at the top
+      }
+    } else {
+      for (let y = maxYear; y >= minYear; y--) {
+        list.push(y);
+      }
     }
     return list;
-  }, [minYear, maxYear]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [minYear, maxYear, min?.year]);
 
-  const months = strings.personalDetails.months;
+  const allMonths = strings.personalDetails.months;
+  const monthStart = min && draft.year === min.year ? min.month : 0;
+  const months = allMonths.slice(monthStart);
+
+  const dayStart = min && draft.year === min.year && draft.month === min.month ? min.day : 1;
   const dayCount = daysIn(draft.month, draft.year);
   const days = useMemo(
-    () => Array.from({length: dayCount}, (_, i) => String(i + 1)),
-    [dayCount],
+    () => Array.from({length: dayCount - dayStart + 1}, (_, i) => String(dayStart + i)),
+    [dayCount, dayStart],
   );
 
   const picked = parse(value);
   const shown = picked
-    ? `${pad(picked.day)} ${months[picked.month]} ${picked.year}`
+    ? `${pad(picked.day)} ${allMonths[picked.month]} ${picked.year}`
     : undefined;
 
   const onOpen = () => {
-    setDraft(picked ?? {day: 1, month: 0, year: defaultYear});
+    setDraft(picked ? clamp(picked) : startDraft());
     setOpen(true);
   };
 
-  // keep the day valid when month / year change (e.g. 31 -> Feb)
-  const update = (next: Partial<typeof draft>) =>
-    setDraft(d => {
-      const merged = {...d, ...next};
-      return {...merged, day: Math.min(merged.day, daysIn(merged.month, merged.year))};
-    });
+  // pull a draft back inside the allowed range (never before minDate,
+  // never a day that the month does not have, e.g. 31 -> Feb)
+  function clamp(d: Draft): Draft {
+    let {year, month, day} = d;
+    if (min) {
+      if (year < min.year) {
+        year = min.year;
+      }
+      if (year === min.year && month < min.month) {
+        month = min.month;
+      }
+    }
+    day = Math.min(day, daysIn(month, year));
+    if (min && year === min.year && month === min.month && day < min.day) {
+      day = min.day;
+    }
+    return {year, month, day};
+  }
+
+  const update = (next: Partial<Draft>) => setDraft(d => clamp({...d, ...next}));
 
   const onDone = () => {
+    const date = new Date(draft.year, draft.month, draft.day);
+    if (minDate && date < minDate) {
+      return; // cannot happen with the clamped wheels, but never save a past date
+    }
     onChange(`${pad(draft.month + 1)}${pad(draft.day)}${draft.year}`);
     setOpen(false);
   };
 
   return (
     <View style={[styles.field, containerStyle]}>
-      <Text style={styles.label}>{label}</Text>
-      <Pressable onPress={onOpen} style={[styles.box, open && styles.boxFocused]}>
+      <Text style={[styles.label, labelColor ? {color: labelColor} : null]}>{label}</Text>
+      <Pressable
+        onPress={onOpen}
+        style={[
+          styles.box,
+          darkBorder && styles.boxDark,
+          open && styles.boxFocused,
+          boxStyle,
+        ]}>
         <Text numberOfLines={1} style={[styles.valueText, !shown && styles.placeholderText]}>
           {shown ?? placeholder}
         </Text>
@@ -186,17 +260,18 @@ export default function DateField({
 
             <View style={styles.wheels}>
               <View style={styles.band} pointerEvents="none" />
-              {/* key: re-mount a wheel when its list length changes so it re-centres */}
+              {/* key: re-mount a wheel when its list changes so it re-centres */}
               <Wheel
-                key={`d${days.length}`}
+                key={`d${dayStart}-${days.length}`}
                 items={days}
-                index={draft.day - 1}
-                onChange={i => update({day: i + 1})}
+                index={draft.day - dayStart}
+                onChange={i => update({day: dayStart + i})}
               />
               <Wheel
+                key={`m${monthStart}`}
                 items={months}
-                index={draft.month}
-                onChange={i => update({month: i})}
+                index={draft.month - monthStart}
+                onChange={i => update({month: monthStart + i})}
               />
               <Wheel
                 items={years.map(String)}
@@ -233,6 +308,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.background,
+  },
+  boxDark: {
+    borderColor: colors.textDark,
   },
   boxFocused: {
     borderColor: colors.primary,

@@ -173,6 +173,10 @@ export const en = {
     phonePlaceholder: '10-digit mobile number',
     expiryDate: 'Expiry Date',
     numberPlaceholder: 'Enter exact number from card',
+    numberInvalid: 'Enter the number exactly as printed on the card',
+    selectExpiry: 'Select expiry date',
+    issuedState: 'Issued State',
+    selectState: 'Select state',
     photoTipTitle: 'Clear photos are required',
     photoTipText:
       'Ensure all corners are visible, text is legible, and there is no glare. Place on a dark background.',
@@ -532,6 +536,22 @@ export const en = {
     update: 'Update Document',
     updateNote: 'Updating your document will place your account under review temporarily.',
   },
+
+    tripHistory: {
+    title: 'Trip History',
+    searchPlaceholder: 'Search locations...',
+    filterByDate: 'Filter by date',
+    today: 'Today',
+    yesterday: 'Yesterday',
+    weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    completed: 'Completed',
+    cancelled: 'Cancelled',
+    empty: 'No trips yet',
+    noMatch: 'No trips match your search',
+    failed: "Couldn't load your trips",
+    retry: 'Retry',
+  },
+
   
   tabs: {
     HomeTab: 'Home',

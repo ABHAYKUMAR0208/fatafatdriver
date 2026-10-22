@@ -69,6 +69,9 @@ type SelectFieldProps<T extends string> = {
   value?: T;
   options: {value: T; label: string}[];
   onChange: (value: T) => void;
+  labelColor?: string;
+  darkBorder?: boolean;
+  boxStyle?: StyleProp<ViewStyle>;
   containerStyle?: StyleProp<ViewStyle>;
 };
 
@@ -78,6 +81,9 @@ export function DriverSelectField<T extends string>({
   value,
   options,
   onChange,
+  labelColor = colors.textSecondary,
+  darkBorder,
+  boxStyle,
   containerStyle,
 }: SelectFieldProps<T>) {
   const insets = useSafeAreaInsets();
@@ -86,10 +92,16 @@ export function DriverSelectField<T extends string>({
 
   return (
     <View style={[styles.field, containerStyle]}>
-      <Text style={[styles.label, {color: colors.textSecondary}]}>{label}</Text>
+      <Text style={[styles.label, {color: labelColor}]}>{label}</Text>
       <Pressable
         onPress={() => setOpen(true)}
-        style={[styles.box, styles.select, open && styles.boxFocused]}>
+        style={[
+          styles.box,
+          styles.select,
+          darkBorder && styles.boxDark,
+          open && styles.boxFocused,
+          boxStyle,
+        ]}>
         <Text
           numberOfLines={1}
           style={[styles.selectText, !value && styles.placeholderText]}>

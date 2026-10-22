@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useSyncExternalStore} from 'react';
 
 // Which document the detail screen shows. Add more keys here later
 // (for example 'vehicleRc', 'insurance') when those screens are designed.
@@ -24,6 +24,43 @@ export async function fetchDocumentDetail(_key: DocumentKey): Promise<DocumentDe
   };
 }
 
+// ---- details the rider / driver saved from the upload screen ---------------
+
+// Kept here so the detail screen shows them right after "Update Document".
+// TODO: send these to your API too, and drop this once the API returns them.
+let saved: Partial<Record<DocumentKey, DocumentDetail>> = {};
+const listeners = new Set<() => void>();
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+export type SavedDocumentFields = {
+  number: string;
+  issuedState: string;
+  expiry: string; // formatted for display
+};
+
+// Called when the upload screen saves. The expiry was already checked to be
+// today or later, so the status is valid; an updated document goes back
+// under review (see the note on the detail screen).
+export function saveDocumentDetail(key: DocumentKey, fields: SavedDocumentFields) {
+  saved = {
+    ...saved,
+    [key]: {
+      number: fields.number.trim(),
+      issuedState: fields.issuedState,
+      expiry: fields.expiry,
+      status: 'valid',
+      approval: 'pending',
+    },
+  };
+  listeners.forEach(l => l());
+}
+
 export type DocumentDetailState = {
   loading: boolean;
   failed: boolean;
@@ -32,10 +69,12 @@ export type DocumentDetailState = {
 };
 
 export function useDocumentDetail(key: DocumentKey): DocumentDetailState {
-  const [detail, setDetail] = useState<DocumentDetail | undefined>();
+  const [fetched, setFetched] = useState<DocumentDetail | undefined>();
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [tick, setTick] = useState(0);
+  // what the user saved wins over what the API / sample returned
+  const override = useSyncExternalStore(subscribe, () => saved[key]);
 
   useEffect(() => {
     let alive = true;
@@ -44,7 +83,7 @@ export function useDocumentDetail(key: DocumentKey): DocumentDetailState {
     fetchDocumentDetail(key)
       .then(res => {
         if (alive) {
-          setDetail(res);
+          setFetched(res);
           setLoading(false);
         }
       })
@@ -59,5 +98,10 @@ export function useDocumentDetail(key: DocumentKey): DocumentDetailState {
     };
   }, [key, tick]);
 
-  return {loading, failed, detail, reload: () => setTick(t => t + 1)};
+  return {
+    loading: override ? false : loading,
+    failed: override ? false : failed,
+    detail: override ?? fetched,
+    reload: () => setTick(t => t + 1),
+  };
 }

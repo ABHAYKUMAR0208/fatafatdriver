@@ -16,13 +16,23 @@ import MdiIcon from '@/components/common/MdiIcon';
 import ActionButton from '@/components/registration/ActionButton';
 import BottomBar from '@/components/registration/BottomBar';
 import DriverHeader from '@/components/driver/DriverHeader';
-import {DriverTextField} from '@/components/driver/DriverFields';
+import {DriverSelectField, DriverTextField} from '@/components/driver/DriverFields';
+import DateField from '@/components/registration/DateField';
 import {colors} from '@/constants/colors';
 import {getDriverDoc} from '@/constants/driverDocuments';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
+import {INDIAN_STATES, stateLabel} from '@/constants/indianStates';
 import {fonts} from '@/constants/typography';
 import {useStrings} from '@/localization';
+import {saveDocumentDetail} from '@/state/documentDetailStore';
 import {markDriverDocUploaded} from '@/state/driverDocumentStore';
+import {
+  formatExpiry,
+  isValidExpiry,
+  sanitizeDocNumber,
+  startOfToday,
+  validateDocNumber,
+} from '@/utils/documentValidation';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DriverUploadDocument'>;
@@ -37,18 +47,6 @@ async function ensureCameraPermission() {
   return result === PermissionsAndroid.RESULTS.GRANTED;
 }
 
-// "12312027" -> "12/31/2027"
-function formatExpiry(digits: string) {
-  let out = digits.slice(0, 2);
-  if (digits.length > 2) {
-    out += `/${digits.slice(2, 4)}`;
-  }
-  if (digits.length > 4) {
-    out += `/${digits.slice(4, 8)}`;
-  }
-  return out;
-}
-
 export default function DriverUploadDocumentScreen({navigation, route}: Props) {
   const strings = useStrings();
   const doc = getDriverDoc(route.params.docId);
@@ -58,9 +56,19 @@ export default function DriverUploadDocumentScreen({navigation, route}: Props) {
   );
   const [active, setActive] = useState(0);
   const [number, setNumber] = useState('');
-  const [expiryDigits, setExpiryDigits] = useState('');
+  const [expiryDigits, setExpiryDigits] = useState(''); // "mmddyyyy"
+  const [stateCode, setStateCode] = useState<string | undefined>();
 
+  const isLicence = doc.id === 'licence';
   const allPicked = images.every(Boolean);
+
+  // Save stays off until every field holds real data: a valid number,
+  // an expiry date that is today or later, and (licence) the issuing state.
+  const numberOk = !text.numberLabel || validateDocNumber(doc.id, number);
+  const expiryOk = !doc.hasExpiry || isValidExpiry(expiryDigits);
+  const stateOk = !isLicence || !!stateCode;
+  const canSave = allPicked && numberOk && expiryOk && stateOk;
+  const showNumberError = !!text.numberLabel && number.length > 0 && !numberOk;
 
   const setImage = (uri: string) => {
     setImages(prev => prev.map((old, i) => (i === active ? uri : old)));
@@ -95,7 +103,18 @@ export default function DriverUploadDocumentScreen({navigation, route}: Props) {
   };
 
   const onSave = () => {
-    // TODO: validate number / expiry and upload the images with your API
+    if (!canSave) {
+      return;
+    }
+    // TODO: upload the images and these details with your API
+    if (isLicence && stateCode) {
+      // shows on the Driver's License page (Profile -> licence card)
+      saveDocumentDetail('licence', {
+        number,
+        issuedState: stateLabel(stateCode),
+        expiry: formatExpiry(expiryDigits),
+      });
+    }
     markDriverDocUploaded(doc.id);
     navigation.goBack();
   };
@@ -171,22 +190,42 @@ export default function DriverUploadDocumentScreen({navigation, route}: Props) {
             style={styles.input}
             placeholder={strings.common.numberPlaceholder}
             value={number}
-            onChangeText={setNumber}
+            onChangeText={t => setNumber(sanitizeDocNumber(doc.id, t))}
+            keyboardType={doc.id === 'aadhar' ? 'number-pad' : 'default'}
             autoCapitalize="characters"
             autoCorrect={false}
           />
         ) : null}
+        {showNumberError ? (
+          <Text style={styles.errorText}>{strings.common.numberInvalid}</Text>
+        ) : null}
+        {isLicence ? (
+          <DriverSelectField
+            label={strings.common.issuedState}
+            labelColor={colors.placeholder}
+            darkBorder
+            boxStyle={styles.input}
+            placeholder={strings.common.selectState}
+            value={stateCode}
+            options={INDIAN_STATES.map(s => ({value: s.code, label: stateLabel(s.code)}))}
+            onChange={setStateCode}
+          />
+        ) : null}
         {doc.hasExpiry ? (
-          <DriverTextField
+          <DateField
             label={strings.common.expiryDate}
             labelColor={colors.placeholder}
             darkBorder
-            style={styles.input}
-            placeholder="MM/DD/YYYY"
-            value={formatExpiry(expiryDigits)}
-            onChangeText={t => setExpiryDigits(t.replace(/\D/g, '').slice(0, 8))}
-            keyboardType="number-pad"
-            maxLength={10}
+            boxStyle={styles.input}
+            placeholder={strings.common.selectExpiry}
+            value={expiryDigits}
+            onChange={setExpiryDigits}
+            // only today or a later date can be picked
+            minDate={startOfToday()}
+            minYear={startOfToday().getFullYear()}
+            maxYear={startOfToday().getFullYear() + 30}
+            defaultYear={startOfToday().getFullYear()}
+            containerStyle={styles.dateField}
           />
         ) : null}
       </KeyboardAwareScrollView>
@@ -194,7 +233,7 @@ export default function DriverUploadDocumentScreen({navigation, route}: Props) {
       <BottomBar>
         <ActionButton
           title={strings.driverUploadDocument.upload}
-          disabled={!allPicked}
+          disabled={!canSave}
           onPress={onSave}
         />
       </BottomBar>
@@ -303,5 +342,16 @@ const styles = StyleSheet.create({
   input: {
     height: 44,
     borderRadius: 10,
+  },
+  dateField: {
+    marginBottom: 18, // same gap as the other driver fields
+  },
+  errorText: {
+    marginTop: -10,
+    marginBottom: 14,
+    fontFamily: fonts.regular,
+    fontSize: 12,
+    lineHeight: 16,
+    color: '#DC2626',
   },
 });

@@ -16,15 +16,24 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import MdiIcon from '@/components/common/MdiIcon';
 import ActionButton from '@/components/registration/ActionButton';
 import BottomBar from '@/components/registration/BottomBar';
-import {TextField} from '@/components/registration/FormFields';
+import DateField from '@/components/registration/DateField';
+import {SelectField, TextField} from '@/components/registration/FormFields';
 import StepHeader from '@/components/registration/StepHeader';
 import {colors} from '@/constants/colors';
 import {getDocument} from '@/constants/documents';
 import {MDI_DOCS} from '@/constants/iconPathsDocs';
+import {INDIAN_STATES, stateLabel} from '@/constants/indianStates';
 import {fonts} from '@/constants/typography';
 import {useStrings} from '@/localization';
+import {saveDocumentDetail} from '@/state/documentDetailStore';
 import {markUploaded} from '@/state/documentStore';
-import {formatDate} from '@/utils/formatDate';
+import {
+  formatExpiry,
+  isValidExpiry,
+  sanitizeDocNumber,
+  startOfToday,
+  validateDocNumber,
+} from '@/utils/documentValidation';
 import type {RootStackParamList} from '@/navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'UploadDocument'>;
@@ -48,10 +57,20 @@ export default function UploadDocumentScreen({navigation, route}: Props) {
   );
   const [active, setActive] = useState(0);
   const [number, setNumber] = useState('');
-  const [expiryDigits, setExpiryDigits] = useState('');
+  const [expiryDigits, setExpiryDigits] = useState(''); // "mmddyyyy"
+  const [stateCode, setStateCode] = useState<string | undefined>();
 
   const previewUri = images[active] ?? images.find(Boolean);
+  const isLicence = doc.id === 'licence';
   const allPicked = images.every(Boolean);
+
+  // Save stays off until every field holds real data: a valid number,
+  // an expiry date that is today or later, and (licence) the issuing state.
+  const numberOk = !text.numberLabel || validateDocNumber(doc.id, number);
+  const expiryOk = !doc.hasExpiry || isValidExpiry(expiryDigits);
+  const stateOk = !isLicence || !!stateCode;
+  const canSave = allPicked && numberOk && expiryOk && stateOk;
+  const showNumberError = !!text.numberLabel && number.length > 0 && !numberOk;
 
   const setImage = (uri: string) => {
     setImages(prev => prev.map((old, i) => (i === active ? uri : old)));
@@ -86,7 +105,18 @@ export default function UploadDocumentScreen({navigation, route}: Props) {
   };
 
   const onSave = () => {
-    // TODO: validate number / expiry and upload the images with your API
+    if (!canSave) {
+      return;
+    }
+    // TODO: upload the images and these details with your API
+    if (isLicence && stateCode) {
+      // shows on the Driver's License page (Profile -> licence card)
+      saveDocumentDetail('licence', {
+        number,
+        issuedState: stateLabel(stateCode),
+        expiry: formatExpiry(expiryDigits),
+      });
+    }
     markUploaded(doc.id);
     navigation.goBack();
   };
@@ -143,19 +173,34 @@ export default function UploadDocumentScreen({navigation, route}: Props) {
             label={text.numberLabel}
             placeholder={strings.common.numberPlaceholder}
             value={number}
-            onChangeText={setNumber}
+            onChangeText={t => setNumber(sanitizeDocNumber(doc.id, t))}
             autoCapitalize="characters"
             autoCorrect={false}
           />
         ) : null}
+        {showNumberError ? (
+          <Text style={styles.errorText}>{strings.common.numberInvalid}</Text>
+        ) : null}
+        {isLicence ? (
+          <SelectField
+            label={strings.common.issuedState}
+            placeholder={strings.common.selectState}
+            value={stateCode}
+            options={INDIAN_STATES.map(s => ({value: s.code, label: stateLabel(s.code)}))}
+            onChange={setStateCode}
+          />
+        ) : null}
         {doc.hasExpiry ? (
-          <TextField
+          <DateField
             label={strings.common.expiryDate}
-            placeholder="mm / dd / yyyy"
-            value={formatDate(expiryDigits)}
-            onChangeText={t => setExpiryDigits(t.replace(/\D/g, '').slice(0, 8))}
-            keyboardType="number-pad"
-            maxLength={14}
+            placeholder={strings.common.selectExpiry}
+            value={expiryDigits}
+            onChange={setExpiryDigits}
+            // only today or a later date can be picked
+            minDate={startOfToday()}
+            minYear={startOfToday().getFullYear()}
+            maxYear={startOfToday().getFullYear() + 30}
+            defaultYear={startOfToday().getFullYear()}
           />
         ) : null}
 
@@ -175,7 +220,7 @@ export default function UploadDocumentScreen({navigation, route}: Props) {
       <BottomBar>
         <ActionButton
           title={strings.uploadDocument.save}
-          disabled={!allPicked}
+          disabled={!canSave}
           onPress={onSave}
         />
       </BottomBar>
@@ -268,6 +313,14 @@ const styles = StyleSheet.create({
   },
   firstField: {
     marginTop: 24,
+  },
+  errorText: {
+    marginTop: -6,
+    marginBottom: 12,
+    fontFamily: fonts.regular,
+    fontSize: 12,
+    lineHeight: 16,
+    color: '#DC2626',
   },
   previewWrap: {
     marginTop: 12,
